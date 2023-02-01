@@ -1,0 +1,14 @@
+{
+  "name": "backend-makarz",
+  "version": "1.0.0",
+  "description": "Proyecto curso Backend",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ariela Makarz",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
