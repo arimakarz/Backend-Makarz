@@ -1,5 +1,5 @@
 const fs = require('fs');
-const filename = './products.json';
+//const filename = './products.json';
 
 class ProductManager{
     constructor(path){
@@ -30,7 +30,7 @@ class ProductManager{
 
     getProductById = (id) => {
         const products = this.getProducts();
-        return (products.find(product => product.id === id) || 'Not found');
+        return (products.find(product => product.id === id) || {status: "error", message: "Product not found"});
     }
 
     addProducts = (title, description, price, thumbnail, code, stock) => {
@@ -85,18 +85,3 @@ class ProductManager{
 }
 
 module.exports = ProductManager
-
-//----Testing-----
-const productManager = new ProductManager(filename);
-console.log(productManager.getProducts());
-// productManager.addProducts('producto prueba', 'Este es un producto prueba', 200, 'Sin imagen', 'abc123', 25);
-// console.log(productManager.getProducts());
-// console.log(productManager.getProductById(1));
-// console.log(productManager.getProductById(80));
-
-// //Modificación de producto
-// const productoModificado = {id: 3, title: "Producto actualizado", description: "Este es una prueba de actualización", price: 220, thumbnail: 'sun imagen', code: 'abc126', stock: 25};
-// productManager.updateProduct(productoModificado);
-
-// //Eliminación de producto
-// productManager.deleteProduct(3);

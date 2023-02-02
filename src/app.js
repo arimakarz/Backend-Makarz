@@ -6,16 +6,16 @@ const productManager = new ProductManager('./products.json');
 
 app.listen(8080, () => { console.log('Server connected!')})
 
-app.get('/products', (req, res) => {
+app.get('/products', async (req, res) => {
     const { limit } = req.query;
-    const productsList = productManager.getProducts();
+    const productsList = await productManager.getProducts();
     (limit) ? productsList.splice(limit, (productsList.length - limit)) : productsList;
     res.send({productsList})
 });
 
-app.get('/products/:pid', (req, res)=>{
+app.get('/products/:pid', async (req, res) => {
     const { pid } = req.params;
-    const product = productManager.getProductById(parseInt(pid));
+    const product = await productManager.getProductById(parseInt(pid));
     res.send(product);
 }) 
 
