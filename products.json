@@ -4,7 +4,8 @@
     "title": "Producto 1",
     "description": "Este es el primer producto",
     "price": 100,
-    "thumbnail": "Sin imagen",
+    "status": "true",
+    "thumbnails": [],
     "code": "aaa111",
     "stock": 20
   },
@@ -13,7 +14,8 @@
     "title": "Producto 2",
     "description": "Este es el segundo producto",
     "price": 200,
-    "thumbnail": "Sin imagen",
+    "status": "true",
+    "thumbnails": [],
     "code": "bbb222",
     "stock": 25
   },
@@ -22,7 +24,8 @@
     "title": "Producto 3",
     "description": "Este es el tercer producto",
     "price": 300,
-    "thumbnail": "Sin imagen",
+    "status": "true",
+    "thumbnails": [],
     "code": "ccc333",
     "stock": 30
   },
@@ -31,7 +34,8 @@
     "title": "Producto 4",
     "description": "Este es el cuarto producto",
     "price": 400,
-    "thumbnail": "Sin imagen",
+    "status": "true",
+    "thumbnails": [],
     "code": "ddd444",
     "stock": 35
   },
@@ -40,7 +44,8 @@
     "title": "Producto 5",
     "description": "Este es el quinto producto",
     "price": 500,
-    "thumbnail": "Sin imagen",
+    "status": "true",
+    "thumbnails": [],
     "code": "eee555",
     "stock": 40
   },
@@ -49,7 +54,8 @@
     "title": "Producto 6",
     "description": "Este es el sexto producto",
     "price": 600,
-    "thumbnail": "Sin imagen",
+    "status": "true",
+    "thumbnails": [],
     "code": "fff666",
     "stock": 45
   },
@@ -58,7 +64,8 @@
     "title": "Producto 7",
     "description": "Este es el septimo producto",
     "price": 700,
-    "thumbnail": "Sin imagen",
+    "status": "true",
+    "thumbnails": [],
     "code": "ggg777",
     "stock": 50
   },
@@ -67,7 +74,8 @@
     "title": "Producto 8",
     "description": "Este es el octavo producto",
     "price": 800,
-    "thumbnail": "Sin imagen",
+    "status": "true",
+    "thumbnails": [],
     "code": "hhh888",
     "stock": 55
   },
@@ -76,7 +84,8 @@
     "title": "Producto 9",
     "description": "Este es el noveno producto",
     "price": 900,
-    "thumbnail": "Sin imagen",
+    "status": "true",
+    "thumbnails": [],
     "code": "iii999",
     "stock": 60
   },
@@ -85,8 +94,19 @@
     "title": "Producto 10",
     "description": "Este es el décimo producto",
     "price": 1000,
-    "thumbnail": "Sin imagen",
+    "status": "true",
+    "thumbnails": [],
     "code": "jjj010",
     "stock": 65
+  },
+  {
+    "id": 11,
+    "title": "Producto nuevo",
+    "description": "Descripción de producto nuevo",
+    "price": 10,
+    "status": "true",
+    "thumbnails": [],
+    "code": "mmm",
+    "stock": 100
   }
 ]

@@ -33,15 +33,15 @@ class ProductManager{
         return (products.find(product => product.id === id) || {status: "error", message: "Product not found"});
     }
 
-    addProducts = (title, description, price, thumbnail, code, stock) => {
+    addProducts = ({title, description, price, thumbnails, code, stock}) => {
         this.getProducts();
-        if (!title || !description || !price || !thumbnail || !code || !stock){
+        if (!title || !description || !price || !code || !stock){
             console.error(`No se puede agregar el producto ${title}. Faltan datos.`);
-            return
+            return ({status: "error", message: `Product ${title} can't be added. Information is missing.`});
         }else{
             if (this.products.find(product => product.code === code)){
                 console.error(`No se puede agregar el producto ${title}. El código ya existe.`)
-                return
+                return ({status: "error", message: `Product ${title} can't be added. Existing code.`})
             }else{
                 const id = this.createId();
                 this.products.push({
@@ -49,12 +49,14 @@ class ProductManager{
                     title,
                     description,
                     price,
-                    thumbnail,
+                    status: "true",
+                    thumbnails,
                     code,
                     stock
                 })
                 fs.writeFileSync(this.path, JSON.stringify(this.products, null, 2));
                 console.log('¡Producto agregado!');
+                return ({status: "success", message: "Product added!"});
             }
         }
     }
@@ -64,10 +66,12 @@ class ProductManager{
         let index = this.products.indexOf(this.products.find((product)=>product.id == updateProduct.id));
         if (index == -1) {
             console.log('No se pudo actualizar el producto');
+            return ({status: "error", message: "Cannot update product."})
         }else{
             this.products[index] = updateProduct;
             fs.writeFileSync(this.path, JSON.stringify(this.products, null, 2));
             console.log('Producto actualizado existosamente.');
+            return ({status: "success", message: "Product updated!"})
         }
     }
 
@@ -76,10 +80,12 @@ class ProductManager{
         let index = this.products.indexOf(this.products.find((product)=>product.id == id));
         if (index == -1){
             console.log('No se pudo eliminar el producto');
+            return ({ status: "error", message: "Cannot delete product."})
         }else{
             this.products.splice(index, 1);
             fs.writeFileSync(this.path, JSON.stringify(this.products, null, 2));
             console.log('Producto eliminado existosamente');
+            return ({ status: "success", message: "Product deleted."})
         }
     }
 }
