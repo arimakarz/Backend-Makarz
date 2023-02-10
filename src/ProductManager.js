@@ -33,9 +33,9 @@ class ProductManager{
         return (products.find(product => product.id === id) || {status: "error", message: "Product not found"});
     }
 
-    addProducts = ({title, description, price, thumbnails, code, stock}) => {
+    addProducts = ({title, description, price, category, thumbnails, code, stock}) => {
         this.getProducts();
-        if (!title || !description || !price || !code || !stock){
+        if (!title || !description || !price || !category || !code || !stock){
             console.error(`No se puede agregar el producto ${title}. Faltan datos.`);
             return ({status: "error", message: `Product ${title} can't be added. Information is missing.`});
         }else{
@@ -49,6 +49,7 @@ class ProductManager{
                     title,
                     description,
                     price,
+                    category,
                     status: "true",
                     thumbnails,
                     code,
@@ -80,7 +81,7 @@ class ProductManager{
         let index = this.products.indexOf(this.products.find((product)=>product.id == id));
         if (index == -1){
             console.log('No se pudo eliminar el producto');
-            return ({ status: "error", message: "Cannot delete product."})
+            return ({ status: "error", message: "Cannot delete product. ID not found"})
         }else{
             this.products.splice(index, 1);
             fs.writeFileSync(this.path, JSON.stringify(this.products, null, 2));

@@ -5,14 +5,16 @@ const router = Router();
 const cartsManager = new CartsManager();
 
 router.post('/', (req, res) => {
-    cartsManager.createCart();
+    const response = cartsManager.createCart();
+    if (response.status == "success") res.status(201).json({ response })
+    else res.status(400).json({ response })
 })
 
 router.get('/:cid', (req, res) => {
     const { cid } = req.body
-    const cart = cartsManager.getCart(cid);
-    if (cart.id == -1) res.status(400).send('Cart id not found')
-    else res.status(200).json({cart});
+    const response = cartsManager.getCart(cid);
+    if (response.id == -1) res.status(400).json({response})
+    else res.status(200).json({response});
 })
 
 router.post('/:cid/products/:pid', (req, res) => {

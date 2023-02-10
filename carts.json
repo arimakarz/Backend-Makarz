@@ -44,10 +44,19 @@
   },
   {
     "id": 4,
-    "products": []
-  },
-  {
-    "id": 5,
-    "products": []
+    "products": [
+      {
+        "product": 2,
+        "quantity": 2
+      },
+      {
+        "product": 8,
+        "quantity": 1
+      },
+      {
+        "product": 9,
+        "quantity": 2
+      }
+    ]
   }
 ]

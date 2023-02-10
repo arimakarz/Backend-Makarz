@@ -48,7 +48,6 @@ class CartsManager{
             return ({status: "error", message: "Cannot find cart ID."})
         }else{
             let indexProduct = carts[index].products.indexOf(carts[index].products.find(item => item.product == pid))
-            console.log(indexProduct)
             if (indexProduct == -1){
                 carts[index].products.push({ product: pid, quantity: 1 })
                 message = 'Product added to cart!'

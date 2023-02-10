@@ -21,8 +21,8 @@ router.post('/', (req, res) => {
     const newProduct = req.body;
     console.log(newProduct)
     const response = productManager.addProducts(newProduct);
-    if (response.status == "success") res.status(201).json(response)
-    else res.status(400).json(response);
+    if (response.status == "success") res.status(201).json({response})
+    else res.status(400).json({response});
 })
 
 router.put('/:pid', (req, res) => {
@@ -37,7 +37,7 @@ router.delete('/:pid', (req, res) => {
     const { pid } = req.body;
     const response = productManager.deleteProduct(pid);
     if (response.status == "success") res.status(200).json({response});
-    else res.status(400).json(response)
+    else res.status(400).json({response})
 })
 
 module.exports = router
