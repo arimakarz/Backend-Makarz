@@ -1,4 +1,4 @@
-const { Router, response } = require('express');
+const { Router} = require('express');
 const ProductManager = require('../ProductManager.js');
 
 const router = Router();
@@ -8,10 +8,26 @@ router.get('/', (req, res) => {
     const { limit } = req.query;
     const productsList = productManager.getProducts();
     (limit) ? productsList.splice(limit, (productsList.length - limit)) : productsList;
-    res.json({productsList})
+    //res.json({productsList})
+    res.render('index', {
+        title: "Products",
+        productList: productsList
+    })
+});
+
+router.get('/realtimeproducts', (req, res) => {
+    const { limit } = req.query;
+    const productsList = productManager.getProducts();
+    (limit) ? productsList.splice(limit, (productsList.length - limit)) : productsList;
+    //res.json({productsList})
+    res.render('realTimeProducts', {
+        title: "Products",
+        productList: productsList
+    })
 });
 
 router.get('/:pid', (req, res) => {
+    console.log(pid)
     const { pid } = req.body;
     const product = productManager.getProductById(parseInt(pid));
     res.json({product});
@@ -38,6 +54,20 @@ router.delete('/:pid', (req, res) => {
     const response = productManager.deleteProduct(pid);
     if (response.status == "success") res.status(200).json({response});
     else res.status(400).json({response})
+})
+
+router.post('/realtimeproducts', (req, res) => {
+    const newProduct = req.body;
+    const response = productManager.addProducts(newProduct);
+    if (response.status == "success"){
+        const productsList = productManager.getProducts();
+        res.render('realTimeProducts', {
+            title: 'Products',
+            productList: productsList,
+            result: response
+        })
+    }
+    else res.status(400).json({response});
 })
 
 module.exports = router
