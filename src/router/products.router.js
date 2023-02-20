@@ -1,5 +1,5 @@
 const { Router} = require('express');
-const ProductManager = require('../ProductManager.js');
+const ProductManager = require('../controllers/ProductManager.js');
 
 const router = Router();
 const productManager = new ProductManager(__dirname + '/../../products.json');
@@ -59,15 +59,12 @@ router.delete('/:pid', (req, res) => {
 router.post('/realtimeproducts', (req, res) => {
     const newProduct = req.body;
     const response = productManager.addProducts(newProduct);
-    if (response.status == "success"){
-        const productsList = productManager.getProducts();
-        res.render('realTimeProducts', {
-            title: 'Products',
-            productList: productsList,
-            result: response
-        })
-    }
-    else res.status(400).json({response});
+    const productsList = productManager.getProducts();
+    res.render('realTimeProducts', {
+        title: 'Products',
+        productList: productsList,
+        result: response
+    })
 })
 
 module.exports = router

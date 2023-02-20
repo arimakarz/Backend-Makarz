@@ -3,7 +3,7 @@ const handlebars = require('express-handlebars');
 const { Server } = require('socket.io');
 const productsRouter = require('./router/products.router');
 const cartsRouter = require('./router/carts.router');
-const ProductManager = require('./ProductManager.js');
+const ProductManager = require('./controllers/ProductManager.js');
 
 const app = express();
 const httpServer = app.listen(8080, () => { console.log('Server connected!')})
@@ -23,8 +23,9 @@ app.use('/api/carts', cartsRouter);
 io.on('connection', socket => {
     console.log('New client connected!')
     socket.on("newProduct", data =>{
-        const productsList = productManager.getProducts();
-        io.emit('realTimeProducts', productsList)
+        console.log(data)
+        //const productsList = productManager.getProducts();
+        //io.emit('realTimeProducts', productsList)
     })
 
     socket.on('deleteProduct', id => {

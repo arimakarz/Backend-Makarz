@@ -14,8 +14,10 @@ buttonDelete.addEventListener('click', evt => {
 socket.on('realTimeProducts', data => {
     let showProducts = document.getElementById("showProducts")
     showProducts.innerHTML = ''
+
     if (data.result.status == "error"){
         console.log(data.result.message)
+        alert(data.result.message)
     }
     data.productList.forEach(product => {
         showProducts.innerHTML += 
