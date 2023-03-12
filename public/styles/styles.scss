@@ -1,0 +1,47 @@
+.formData{
+    border: 1px solid black;
+    padding: 15px;
+    width: 350px;
+    font-size: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.formItem{
+    display: grid;
+    grid-template-columns: 100px 200px;
+    margin-left: 10px;
+
+    label{
+        text-align: right;
+    }
+}
+
+.deleteById{
+    border: 1px solid black;
+    padding: 15px;
+    width: 350px;
+    font-size: 16px;
+}
+
+h1{
+    text-align: center;
+}
+
+.showProducts{
+    width: 1000px;
+    margin-left: 15%;
+    text-align: center;
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    row-gap: 20px;
+}
+
+.eachProduct{
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid;
+    padding: 10px;
+    box-shadow: 5px 2px 8px 5px #888888;
+}

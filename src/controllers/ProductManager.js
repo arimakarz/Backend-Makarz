@@ -1,5 +1,5 @@
-const fs = require('fs');
-//const filename = './products.json';
+// import fs from 'fs';
+import productModel from '../models/products.model.js';
 
 class ProductManager{
     constructor(path){
@@ -7,55 +7,47 @@ class ProductManager{
         this.products = [];
     }
 
-    createId = () => {
-        const countProducts = this.products.length;
-        if (countProducts === 0){
-            return 1;
-        }else{
-            return (this.products[countProducts - 1].id) + 1;
-        }
+    // createId = () => {
+    //     const countProducts = this.products.length;
+    //     if (countProducts === 0){
+    //         return 1;
+    //     }else{
+    //         return (this.products[countProducts - 1].id) + 1;
+    //     }
+    // }
+
+    getProducts = async () => {
+        const productsDB = await productModel.find().lean().exec()
+        return productsDB;
     }
 
-    getProducts = () => {
-        let products = [];
-        if (fs.existsSync(this.path)){
-            products = fs.readFileSync(this.path, 'utf-8')
-            this.products = JSON.parse(products);
-            return this.products;
-        }else{
-            console.log('Error al leer el archivo');
-            return products;
-        }
+    getProductById = async (id) => {
+        const product = await productModel.findOne({id: id})
+        return product;
     }
 
-    getProductById = (id) => {
-        const products = this.getProducts();
-        return (products.find(product => product.id === id) || {status: "error", message: "Product not found"});
-    }
-
-    addProducts = ({title, description, price, category, thumbnails, code, stock}) => {
-        this.getProducts();
+    addProducts = async ({title, description, price, category, status, thumbnails, code, stock}) => {
+        await this.getProducts();
         if (!title || !description || !price || !category || !code || !stock){
             console.error(`No se puede agregar el producto ${title}. Faltan datos.`);
             return ({status: "error", message: `Product ${title} can't be added. Information is missing.`});
         }else{
-            if (this.products.find(product => product.code === code)){
+            const existingCode = await productModel.findOne({code: code})
+            if (existingCode){
                 console.error(`No se puede agregar el producto ${title}. El código ya existe.`)
                 return ({status: "error", message: `Product ${title} can't be added. Existing code.`})
             }else{
-                const id = this.createId();
-                this.products.push({
-                    id,
-                    title,
-                    description,
-                    price,
-                    category,
-                    status: "true",
-                    thumbnails,
-                    code,
-                    stock
-                })
-                fs.writeFileSync(this.path, JSON.stringify(this.products, null, 2));
+                await productModel.create({
+                    //id: 1,
+                    title: title,
+                    description: description,
+                    price: price,
+                    category: category,
+                    status: status,
+                    thumbnails: thumbnails,
+                    code: code,
+                    stock: stock
+                  })
                 console.log('¡Producto agregado!');
                 return ({status: "success", message: "Product added!"});
             }
@@ -76,19 +68,15 @@ class ProductManager{
         }
     }
 
-    deleteProduct = (id) => {
-        this.products = this.getProducts();
-        let index = this.products.indexOf(this.products.find((product)=>product.id == id));
-        if (index == -1){
-            console.log('No se pudo eliminar el producto');
-            return ({ status: "error", message: "Cannot delete product. ID not found"})
-        }else{
-            this.products.splice(index, 1);
-            fs.writeFileSync(this.path, JSON.stringify(this.products, null, 2));
-            console.log('Producto eliminado existosamente');
+    deleteProduct = async (id) => {
+        console.log(id)
+        const deletedProduct = await productModel.deleteOne({_id: id})
+        if(deletedProduct.deletedCount == 1){
             return ({ status: "success", message: "Product deleted."})
+        }else{
+            return ({ status: "error", message: "Cannot delete product. ID not found"})
         }
     }
 }
 
-module.exports = ProductManager
+export default ProductManager

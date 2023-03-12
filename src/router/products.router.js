@@ -1,12 +1,14 @@
-const { Router} = require('express');
-const ProductManager = require('../controllers/ProductManager.js');
+//import productModel from '../models/products.model.js';
+import { Router} from 'express';
+import ProductManager from '../controllers/ProductManager.js';
 
 const router = Router();
-const productManager = new ProductManager(__dirname + '/../../products.json');
+//const productManager = new ProductManager(__dirname + '/../../products.json');
+const productManager = new ProductManager('/Users/arielamakarz/Documents/Coderhouse/Backend/Backend-Makarz/products.json')
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
     const { limit } = req.query;
-    const productsList = productManager.getProducts();
+    const productsList = await productManager.getProducts();
     (limit) ? productsList.splice(limit, (productsList.length - limit)) : productsList;
     //res.json({productsList})
     res.render('index', {
@@ -15,9 +17,9 @@ router.get('/', (req, res) => {
     })
 });
 
-router.get('/realtimeproducts', (req, res) => {
+router.get('/realtimeproducts', async (req, res) => {
     const { limit } = req.query;
-    const productsList = productManager.getProducts();
+    const productsList = await productManager.getProducts();
     (limit) ? productsList.splice(limit, (productsList.length - limit)) : productsList;
     //res.json({productsList})
     res.render('realTimeProducts', {
@@ -26,10 +28,10 @@ router.get('/realtimeproducts', (req, res) => {
     })
 });
 
-router.get('/:pid', (req, res) => {
-    console.log(pid)
-    const { pid } = req.body;
-    const product = productManager.getProductById(parseInt(pid));
+router.get('/:pid', async (req, res) => {
+    const { pid } = req.params;
+    const product = await productManager.getProductById(parseInt(pid));
+    console.log(product)
     res.json({product});
 }) 
 
@@ -49,17 +51,17 @@ router.put('/:pid', (req, res) => {
     else res.status(400).json({response})
 })
 
-router.delete('/:pid', (req, res) => {
+router.delete('/:pid', async (req, res) => {
     const { pid } = req.body;
-    const response = productManager.deleteProduct(pid);
+    const response = await productManager.deleteProduct(pid);
     if (response.status == "success") res.status(200).json({response});
     else res.status(400).json({response})
 })
 
-router.post('/realtimeproducts', (req, res) => {
+router.post('/realtimeproducts', async (req, res) => {
     const newProduct = req.body;
-    const response = productManager.addProducts(newProduct);
-    const productsList = productManager.getProducts();
+    const response = await productManager.addProducts(newProduct);
+    const productsList = await productManager.getProducts();
     res.render('realTimeProducts', {
         title: 'Products',
         productList: productsList,
@@ -67,4 +69,4 @@ router.post('/realtimeproducts', (req, res) => {
     })
 })
 
-module.exports = router
+export default router

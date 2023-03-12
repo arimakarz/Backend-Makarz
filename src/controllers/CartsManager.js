@@ -1,6 +1,8 @@
-const fs = require('fs');
+// import fs from 'fs';
+import cartModel from '../models/carts.models.js';
 
-const path = __dirname + '/../carts.json'
+// //const path = __dirname + '/../carts.json'
+// const path ='/Users/arielamakarz/Documents/Coderhouse/Backend/Backend-Makarz/carts.json'
 
 class CartsManager{
     constructor(){
@@ -8,15 +10,9 @@ class CartsManager{
         this.products = [];
     }
 
-    getCart = (id) => {
-        console.log(path)
-        if (fs.existsSync(path)){
-            const carts = JSON.parse(fs.readFileSync(path, 'utf-8'));
-            return (carts.find(cart => cart.id == id) || {id: -1, status: "error", message: "Cart id not found"});
-        }else{
-            console.log('Error al leer el archivo');
-            return { status: "error", message: "Error"};
-        }
+    getCart = async (id) => {
+        const cartDB = await cartModel.findOne({id: id})
+        return cartDB;
     }
 
     createCart = () => {
@@ -63,4 +59,4 @@ class CartsManager{
     }
 }
 
-module.exports = CartsManager
+export default CartsManager
