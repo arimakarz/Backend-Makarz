@@ -1,6 +1,33 @@
+<h1>Product List</h1>
+<div class="showProducts">
+    {{#each docs}}
+        <div class="eachProduct">        
+            <a href="/api/products/{{this._id}}"><h3>{{ this.title }}</h3></a>
+            <p>Description: {{ this.description }}</p>
+            <p>Price: {{ this.price }}</p>
+            <p>Category: {{ this.category }}</p>
+            <p>Stock: {{ this.stock }}</p>
+            <form action="/api/carts/641899bb4295790617f4db49/products/{{this._id}}" method="post">
+                {{!-- <label for="qty">Quantity: </label>
+                <input type="text" id="qty"> --}}
+                <button id="addToCart">Add to cart</button>
+            </form> 
+        </div>
+    {{/each}}
+</div>
+<div class="pageNumber">
+    {{#if hasPrevPage}}
+        <a href="{{previousLink}}">Anterior</a>
+    {{/if}}
+    <label for="">{{ page }}</label>
+    {{#if hasNextPage }}
+        <a href="{{nextLink}}">Siguiente</a>
+    {{/if}}
+</div>
+<hr>
 <label style="font-size:20px;font-weight:bold;" for="">New product</label>
 <div class="formData">
-    <form action="/api/products/realtimeproducts" method="post">
+    <form action="/api/products" method="post">
         <div class="formItem">
             <label for="title">Title:</label>
             <input type="text" name="title" id="title"><br />
@@ -36,19 +63,5 @@
         <input type="submit" id="deleteProduct" value="Delete this product">
     </form>
 </div>
-<hr>
-<h1>Product List</h1>
-<div class="showProducts">
-    {{#each productList}}
-        <div class="eachProduct">        
-            <h3>{{ this.title }}</h3>
-            <p>Description: {{ this.description }}</p>
-            <p>Price: {{ this.price }}</p>
-            <p>Category: {{ this.category }}</p>
-            <p>Stock: {{ this.stock }}</p>
-        </div>
-    {{/each}}
-</div>
-
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/client.js"></script>

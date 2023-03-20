@@ -5,9 +5,10 @@ import mongoose from 'mongoose';
 import productsRouter from './router/products.router.js';
 import cartsRouter from './router/carts.router.js';
 import chatRouter from './router/chat.router.js';
-import ProductManager from'./controllers/ProductManager.js';
-import MessageManager from './controllers/MessagesManager.js'
+import ProductManager from'./dao/ProductManager.js';
+import MessageManager from './dao/MessagesManager.js'
 import __dirname from './utils.js';
+import CartsManager from './dao/CartsManager.js';
 
 const app = express();
 const httpServer = app.listen(3000, () => { console.log('Server connected!')})
@@ -25,6 +26,7 @@ app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
 app.use('/', chatRouter);
 
+//DB Connection
 const uri = 'mongodb+srv://coder:coder@cluster0.wxncseh.mongodb.net/ecommerce';
 
 mongoose.set('strictQuery', false)

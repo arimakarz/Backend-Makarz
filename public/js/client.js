@@ -1,6 +1,7 @@
 const socket = io()
 const buttonSubmit = document.getElementById('newProduct')
 const buttonDelete = document.getElementById('deleteProduct')
+const buttonAddToCart = document.getElementById('addToCart')
 const id = document.getElementById('idProduct')
 
 buttonSubmit.addEventListener('click', evt => {
@@ -9,6 +10,10 @@ buttonSubmit.addEventListener('click', evt => {
 
 buttonDelete.addEventListener('click', evt => {
     socket.emit('deleteProduct', id.value);
+})
+
+buttonAddToCart.addEventListener('click', evt => {
+    socket.emit('addToCart', evt.target.id);
 })
 
 socket.on('realTimeProducts', data => {

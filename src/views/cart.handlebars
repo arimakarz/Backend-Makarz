@@ -1,0 +1,28 @@
+<div>
+    {{#if productsArray}}
+        <h1>Your cart</h1>
+        <table class="cartInfo">
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Quantity</th>
+            </tr>
+            {{#each productsArray}}
+                <tr>
+                    <td>{{this.product.title}}</td>
+                    <td>{{this.product.description}}</td>
+                    <td>{{this.product.price}}</td>
+                    <td>{{quantity}}</td>
+                </tr>
+            {{/each}}
+        </table>
+        <div style="margin:25px;">
+            <a href="/api/products">Continue shopping</a>
+        </div>
+    {{else}}
+        <div>
+            <p>Empty cart. You don't have any products yet.</p>
+        </div>
+    {{/if}}
+</div>

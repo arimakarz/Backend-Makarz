@@ -16,13 +16,32 @@ class ProductManager{
     //     }
     // }
 
-    getProducts = async () => {
-        const productsDB = await productModel.find().lean().exec()
+    getProducts = async (page, limit, sort, filter) => {
+        //const productsDB = await productModel.find().lean().exec()
+        page = page || 1
+        limit = limit || 10
+        sort = sort || 0
+        filter = filter || ''
+
+        const productsDB = await productModel.paginate(
+            filter, 
+            {
+                page, 
+                limit, 
+                sort: {
+                    "price": sort
+                },
+                lean: true
+            } 
+        )
+        if (productsDB) productsDB.status = "success"
+        else productsDB.status = "error"
         return productsDB;
     }
 
     getProductById = async (id) => {
-        const product = await productModel.findOne({id: id})
+        const product = await productModel.findOne({_id: id})
+        console.log(product)
         return product;
     }
 

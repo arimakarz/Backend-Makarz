@@ -1,8 +1,6 @@
-// import fs from 'fs';
-import cartModel from '../models/carts.models.js';
+import fs from 'fs';
 
-// //const path = __dirname + '/../carts.json'
-// const path ='/Users/arielamakarz/Documents/Coderhouse/Backend/Backend-Makarz/carts.json'
+const path = __dirname + '/../carts.json'
 
 class CartsManager{
     constructor(){
@@ -11,8 +9,13 @@ class CartsManager{
     }
 
     getCart = async (id) => {
-        const cartDB = await cartModel.findOne({id: id})
-        return cartDB;
+        if (fs.existsSync(path)){
+            const carts = JSON.parse(fs.readFileSync(path, 'utf-8'));
+            return (carts.find(cart => cart.id == id) || {id: -1, status: "error", message: "Cart id not found"});
+        }else{
+            console.log('Error al leer el archivo');
+            return { status: "error", message: "Error"};
+        }
     }
 
     createCart = () => {
@@ -56,6 +59,16 @@ class CartsManager{
             return ({status: "success", message: message})
         }
         
+    }
+
+    deleteFromCart = async (cid, pid) => {
+        console.log(id)
+        const deletedProduct = await cartModel.deleteOne({_id: cid, product: pid})
+        if(deletedProduct.deletedCount == 1){
+            return ({ status: "success", message: "Product deleted from cart."})
+        }else{
+            return ({ status: "error", message: "Cannot delete product."})
+        }
     }
 }
 

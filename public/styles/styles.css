@@ -36,6 +36,13 @@ h1 {
   row-gap: 20px;
 }
 
+.pageNumber {
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 20px;
+}
+
 .eachProduct {
   width: 200px;
   display: flex;
@@ -43,4 +50,12 @@ h1 {
   border: 1px solid;
   padding: 10px;
   box-shadow: 5px 2px 8px 5px #888888;
+}
+
+.cartInfo th {
+  width: 150px;
+}
+.cartInfo td {
+  width: 150px;
+  text-align: center;
 }/*# sourceMappingURL=styles.css.map */

@@ -1,20 +1,43 @@
-//import productModel from '../models/products.model.js';
 import { Router} from 'express';
-import ProductManager from '../controllers/ProductManager.js';
+import ProductManager from '../dao/ProductManager.js';
 
 const router = Router();
 //const productManager = new ProductManager(__dirname + '/../../products.json');
 const productManager = new ProductManager('/Users/arielamakarz/Documents/Coderhouse/Backend/Backend-Makarz/products.json')
 
 router.get('/', async (req, res) => {
-    const { limit } = req.query;
-    const productsList = await productManager.getProducts();
-    (limit) ? productsList.splice(limit, (productsList.length - limit)) : productsList;
+    let page = parseInt(req.query.page);
+    let limit = parseInt(req.query.limit);
+    let sort = parseInt(req.query.sort);
+    let query = req.query.query;
+    let filter = {}
+
+    if (!page) page = 1
+    if (!limit) limit = 10
+    if (!sort) sort = 0
+    
+    //Interpreté de la consigna que 'query' recibe si es búsqueda por stock o por categoría.
+    //1 implica que busco productos con stock positivo.
+    //Otro valor de texto significa búsqueda por categoría.
+    //Si no se pasa ningún valor, devuelve todo.
+    if (query){
+        if (query == '1'){
+            filter = { stock: {$gt: 0} }
+        }else{
+            filter = ({category: query})
+        }
+    }else{
+        query=""
+    }
+    
+    const results = await productManager.getProducts(page, limit, sort, filter);
+    //(limit) ? productsList.splice(limit, (productsList.length - limit)) : productsList;
     //res.json({productsList})
-    res.render('index', {
-        title: "Products",
-        productList: productsList
-    })
+
+    results.previousLink = results.hasPrevPage ? `/api/products?page=${results.prevPage}&limit=${limit}&sort=${sort}&query=${query}` : ''
+    results.nextLink = results.hasNextPage ? `/api/products?page=${results.nextPage}&limit=${limit}&sort=${sort}&query=${query}` : ''
+
+    res.render('realTimeProducts', results)
 });
 
 router.get('/realtimeproducts', async (req, res) => {
@@ -22,30 +45,29 @@ router.get('/realtimeproducts', async (req, res) => {
     const productsList = await productManager.getProducts();
     (limit) ? productsList.splice(limit, (productsList.length - limit)) : productsList;
     //res.json({productsList})
-    res.render('realTimeProducts', {
-        title: "Products",
-        productList: productsList
-    })
+    res.render('realTimeProducts', productsList)
 });
 
 router.get('/:pid', async (req, res) => {
     const { pid } = req.params;
-    const product = await productManager.getProductById(parseInt(pid));
-    console.log(product)
-    res.json({product});
+    try{
+        const product = await productManager.getProductById(pid);
+        res.render('product', product);
+    }catch{ res.status(400).send('Product ID not found.')}
+    //console.log(product)
+    //res.json({product});
 }) 
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
     const newProduct = req.body;
-    console.log(newProduct)
-    const response = productManager.addProducts(newProduct);
-    if (response.status == "success") res.status(201).json({response})
+    const response = await productManager.addProducts(newProduct);
+    const productsList = await productManager.getProducts();
+    if (response.status == "success") res.status(201).render('realTimeProducts',productsList)
     else res.status(400).json({response});
 })
 
 router.put('/:pid', (req, res) => {
     const product = req.body;
-    console.log(product)
     const response = productManager.updateProduct(product);
     if (response.status == "success") res.status(200).json({ response });
     else res.status(400).json({response})
@@ -54,7 +76,8 @@ router.put('/:pid', (req, res) => {
 router.delete('/:pid', async (req, res) => {
     const { pid } = req.body;
     const response = await productManager.deleteProduct(pid);
-    if (response.status == "success") res.status(200).json({response});
+    const results = await productManager.getProducts(1,10,0,'')
+    if (response.status == "success") res.status(200).render("realTimeProducts", results)//res.status(200).json({response});
     else res.status(400).json({response})
 })
 
@@ -62,11 +85,7 @@ router.post('/realtimeproducts', async (req, res) => {
     const newProduct = req.body;
     const response = await productManager.addProducts(newProduct);
     const productsList = await productManager.getProducts();
-    res.render('realTimeProducts', {
-        title: 'Products',
-        productList: productsList,
-        result: response
-    })
+    res.render('realTimeProducts', productsList)
 })
 
 export default router
