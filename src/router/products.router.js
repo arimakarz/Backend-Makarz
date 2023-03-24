@@ -1,5 +1,6 @@
 import { Router} from 'express';
 import ProductManager from '../dao/ProductManager.js';
+import UserModel from '../models/user.model.js';
 
 const router = Router();
 //const productManager = new ProductManager(__dirname + '/../../products.json');
@@ -36,8 +37,20 @@ router.get('/', async (req, res) => {
 
     results.previousLink = results.hasPrevPage ? `/api/products?page=${results.prevPage}&limit=${limit}&sort=${sort}&query=${query}` : ''
     results.nextLink = results.hasNextPage ? `/api/products?page=${results.nextPage}&limit=${limit}&sort=${sort}&query=${query}` : ''
+    
+    const user = await UserModel.findOne({ email: req.session.user.email})
+    if (user){
+        results.greetingName = user.first_name
+        if (req.session.user.role == 'user'){
+            results.admin = false
+        }else{
+            results.admin = true
+        }
+        res.render('realTimeProducts', results)
+    }else{
+        res.send('Error loading user...')
+    }
 
-    res.render('realTimeProducts', results)
 });
 
 router.get('/realtimeproducts', async (req, res) => {

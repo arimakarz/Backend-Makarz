@@ -11,8 +11,10 @@
   "author": "Ariela Makarz",
   "license": "ISC",
   "dependencies": {
+    "connect-mongo": "^5.0.0",
     "express": "^4.18.2",
     "express-handlebars": "^7.0.1",
+    "express-session": "^1.17.3",
     "handlebars": "^4.7.7",
     "mongoose": "^6.10.2",
     "mongoose-paginate-v2": "^1.7.1",

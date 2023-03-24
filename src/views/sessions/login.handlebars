@@ -1,0 +1,12 @@
+<h1>User login</h1>
+<div style="text-align:center;">
+    <form action="/sessions/login" method="post" style="text-align: center;">
+        Email: <input type="text" name="email"><br/>
+        Password: <input type="text" name="password"><br/>
+        <input type="submit" value="Login"><br/>
+        {{err}}
+    </form>
+    <form action="/sessions/register">
+        <button>Register</button>
+    </form>
+</div>

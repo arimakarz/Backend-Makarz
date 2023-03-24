@@ -10,7 +10,9 @@ const cartsManager = new CartsManager();
 //Creating a new cart
 router.post('/', async (req, res) => {
     const response = await cartsManager.createCart();
-    if (response.status == "success") res.status(201).json({ response })
+    if (response.status == "success"){
+        res.status(201).json({ response })
+    } 
     else res.status(400).json({ response })
 })
 

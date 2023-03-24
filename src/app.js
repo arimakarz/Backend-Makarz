@@ -2,13 +2,15 @@ import express from 'express';
 import handlebars from 'express-handlebars';
 import { Server } from 'socket.io';
 import mongoose from 'mongoose';
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
 import productsRouter from './router/products.router.js';
 import cartsRouter from './router/carts.router.js';
 import chatRouter from './router/chat.router.js';
+import sessionRouter from './router/session.router.js';
 import ProductManager from'./dao/ProductManager.js';
 import MessageManager from './dao/MessagesManager.js'
 import __dirname from './utils.js';
-import CartsManager from './dao/CartsManager.js';
 
 const app = express();
 const httpServer = app.listen(3000, () => { console.log('Server connected!')})
@@ -22,15 +24,37 @@ app.use(express.static(__dirname + '/../public'))
 app.use(express.json());
 app.use(express.urlencoded({extended: true}))
 
-app.use('/api/products', productsRouter);
-app.use('/api/carts', cartsRouter);
-app.use('/', chatRouter);
+
 
 //DB Connection
-const uri = 'mongodb+srv://coder:coder@cluster0.wxncseh.mongodb.net/ecommerce';
+const uri = 'mongodb+srv://coder:coder@cluster0.wxncseh.mongodb.net/';
+const dbName = 'ecommerce'
 
-mongoose.set('strictQuery', false)
-mongoose.connect(uri, error => {
+//mongoose.set('strictQuery', false)
+
+app.use(session({
+    store: MongoStore.create({
+        mongoUrl: uri,
+        dbName: dbName,
+        mongoOptions: {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        },
+        ttl: 100
+    }),
+    secret: 'secret',
+    resave: true,
+    saveUninitialized: true
+}))
+
+app.use('/api/products', productsRouter);
+app.use('/api/carts', cartsRouter);
+app.use('/sessions', sessionRouter);
+app.use('/', chatRouter);
+
+mongoose.connect(uri, {
+    dbName: dbName
+}, error => {
     if (error){
         console.log('No se pudo conectar con la base de datos')
         return
