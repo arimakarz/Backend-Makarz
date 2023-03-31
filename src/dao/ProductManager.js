@@ -41,7 +41,6 @@ class ProductManager{
 
     getProductById = async (id) => {
         const product = await productModel.findOne({_id: id})
-        console.log(product)
         return product;
     }
 

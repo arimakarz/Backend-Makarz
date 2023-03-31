@@ -11,6 +11,8 @@ import sessionRouter from './router/session.router.js';
 import ProductManager from'./dao/ProductManager.js';
 import MessageManager from './dao/MessagesManager.js'
 import __dirname from './utils.js';
+import passport from 'passport';
+import initializePassport from './config/passport.config.js';
 
 const app = express();
 const httpServer = app.listen(3000, () => { console.log('Server connected!')})
@@ -23,7 +25,6 @@ app.set('view engine', 'handlebars')
 app.use(express.static(__dirname + '/../public'))
 app.use(express.json());
 app.use(express.urlencoded({extended: true}))
-
 
 
 //DB Connection
@@ -46,6 +47,10 @@ app.use(session({
     resave: true,
     saveUninitialized: true
 }))
+
+initializePassport()
+app.use(passport.initialize())
+app.use(passport.session())
 
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);

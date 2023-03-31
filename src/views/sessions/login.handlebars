@@ -1,10 +1,16 @@
 <h1>User login</h1>
-<div style="text-align:center;">
+<div class="formLogin">
     <form action="/sessions/login" method="post" style="text-align: center;">
         Email: <input type="text" name="email"><br/>
         Password: <input type="text" name="password"><br/>
-        <input type="submit" value="Login"><br/>
-        {{err}}
+        <div class="loginButtons">
+            <input type="submit" value="Login"><br/>
+            {{err}}
+            <a href="/sessions/github">
+                Github<img src="https://w7.pngwing.com/pngs/588/441/png-transparent-github-git-hub-repository-social-icons-circular-color-icon.png" style="width: 30px;" />
+                {{!-- <button>Entrar con github</button> --}}
+            </a>
+        </div>
     </form>
     <form action="/sessions/register">
         <button>Register</button>

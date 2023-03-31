@@ -5,7 +5,8 @@
         <form action="/api/carts/" method="post">
             <button>Create new cart</button>
         </form>
-        <a href="/api/carts/64150d8d0b859a25e0d24160">See my cart</a>
+        {{!-- <a href="/api/carts/64150d8d0b859a25e0d24160">See my cart</a> --}}
+        <a href="/api/carts/{{cartId}}">See my cart</a>
     {{/unless}}
     <a href="/sessions/logout">Logout</a>
 </div>
@@ -58,11 +59,13 @@
             <p>Price: {{ this.price }}</p>
             <p>Category: {{ this.category }}</p>
             <p>Stock: {{ this.stock }}</p>
-            <form action="/api/carts/64150d8d0b859a25e0d24160/products/{{this._id}}" method="post">
-                {{!-- <label for="qty">Quantity: </label>
-                <input type="text" id="qty"> --}}
-                <button id="addToCart">Add to cart</button>
-            </form> 
+            {{#unless ../admin}}
+                <form action="/api/carts/{{../cartId}}/products/{{this._id}}" method="post">
+                    {{!-- <label for="qty">Quantity: </label>
+                    <input type="text" id="qty"> --}}
+                    <button id="addToCart">Add to cart</button>
+                </form> 
+            {{/unless}}
         </div>
     {{/each}}
 </div>

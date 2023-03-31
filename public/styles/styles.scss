@@ -75,3 +75,17 @@ h1{
         text-align: center;
     }
 }
+
+.formLogin{
+    text-align: center;
+    width: 350px;
+    margin-left: 40%;
+}
+
+.loginButtons{
+    display: flex;
+    flex-direction: row;
+    width: 200px;
+    justify-content: space-between;
+    margin: 15px 20%;
+}

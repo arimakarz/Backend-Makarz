@@ -8,7 +8,11 @@ const userSchema = new mongoose.Schema({
     email: String,
     age: Number,
     password: String,
-    role: String
+    role: String,
+    cartId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'carts'
+    }
 })
 
 mongoose.set("strictQuery", false)

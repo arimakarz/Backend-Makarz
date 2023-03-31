@@ -1,10 +1,12 @@
 import { Router} from 'express';
+import CartsManager from '../dao/CartsManager.js';
 import ProductManager from '../dao/ProductManager.js';
 import UserModel from '../models/user.model.js';
 
 const router = Router();
 //const productManager = new ProductManager(__dirname + '/../../products.json');
 const productManager = new ProductManager('/Users/arielamakarz/Documents/Coderhouse/Backend/Backend-Makarz/products.json')
+const cartsManager = new CartsManager()
 
 router.get('/', async (req, res) => {
     let page = parseInt(req.query.page);
@@ -38,17 +40,27 @@ router.get('/', async (req, res) => {
     results.previousLink = results.hasPrevPage ? `/api/products?page=${results.prevPage}&limit=${limit}&sort=${sort}&query=${query}` : ''
     results.nextLink = results.hasNextPage ? `/api/products?page=${results.nextPage}&limit=${limit}&sort=${sort}&query=${query}` : ''
     
-    const user = await UserModel.findOne({ email: req.session.user.email})
-    if (user){
-        results.greetingName = user.first_name
-        if (req.session.user.role == 'user'){
-            results.admin = false
+    try{
+        const user = await UserModel.findOne({ email: req.session.user.email})
+        if (user){
+            results.greetingName = user.first_name
+            results.cartId = user.cartId
+            console.log(user)
+            // const cart = await cartsManager.getNewCart()
+            // results.cartId = cart._id.valueOf()
+            if (req.session.user.role == 'admin'){
+                results.admin = true
+            }else{
+                results.admin = false
+            }
+            res.render('realTimeProducts', results)
         }else{
-            results.admin = true
+            res.send('Error loading user...')
         }
-        res.render('realTimeProducts', results)
-    }else{
-        res.send('Error loading user...')
+    }catch (error) {
+
+        console.log('errro')
+        res.status(401).redirect('/sessions/login')
     }
 
 });

@@ -11,15 +11,14 @@ const cartsManager = new CartsManager();
 router.post('/', async (req, res) => {
     const response = await cartsManager.createCart();
     if (response.status == "success"){
-        res.status(201).json({ response })
+        //res.status(201).json({ response })
+        res.status(201).redirect('/api/products')
     } 
     else res.status(400).json({ response })
 })
 
 router.get('/:cid',  async (req, res) => {
     const { cid } = req.params
-    //const cid = '64150d8d0b859a25e0d24160'
-    //const cid = '64150d33296d5a29a30799b1'
     try{
         const response = await cartsManager.getCart(cid);
         const productsArray = response.products

@@ -25,6 +25,10 @@ class CartsManager{
         return results
     }
 
+    getNewCart = async() => {
+        return cartModel.findOne({}).sort({_id:-1}).limit(1);
+    }
+
     addToCart = async (cid, pid) => {
         const cart = await cartModel.findOne({_id: cid})
         if (cart){
