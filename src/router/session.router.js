@@ -1,8 +1,9 @@
 import { Router } from 'express'
 import UserModel from '../models/user.model.js'
 import CartsManager from '../dao/CartsManager.js';
-import { createHash, isValidPassword } from "../utils.js";
 import passport from "passport";
+import { JWT_COOKIE_NAME } from '../config/credentials.js'
+//import { createHash, isValidPassword } from "../utils.js";
 
 const router = Router()
 const cartsManager = new CartsManager();
@@ -26,12 +27,12 @@ router.get('/failRegister', (req, res) => {
 })
 
 router.get('/login', async (req, res) => {
-    if (req.session.user){
-        const user = await UserModel.findOne({ email: req.session.user.email }).lean().exec()
-        res.redirect('/api/products')
-    }else{
+    // if (req.session.user){
+    //     const user = await UserModel.findOne({ email: req.session.user.email }).lean().exec()
+    //     res.redirect('/api/products')
+    // }else{
         res.render('sessions/login')
-    }
+    // }
 })
 
 router.post('/login', passport.authenticate('login', { failureRedirect: '/sessions/failLogin' }), async (req, res) => {
@@ -45,19 +46,17 @@ router.post('/login', passport.authenticate('login', { failureRedirect: '/sessio
         })
     }
     let role = 'user'
+    await cartsManager.createCart()
     if (req.user.email == 'admincoder@coder.com'){
         role = 'admin'
     }
 
-    // const result = cartsManager.createCart()
-    // const newCart = cartsManager.getNewCart()
-    
     req.session.user = {
         email: req.user.email,
         role
     }
 
-    res.redirect('/api/products')
+    res.cookie(JWT_COOKIE_NAME, req.user.token).redirect('/api/products')
 })
 
 router.get('/failLogin', (req, res) => {
@@ -78,19 +77,29 @@ router.get('/githubcallback', passport.authenticate('github', {failureRedirect: 
 //Close session
 
 router.get('/logout', (req, res) => {
-    if (req.session?.user){
-        req.session.destroy(err => {
-            if (err){
-                res.status(500).render(('errors/base'), {
-                    error: err
-                })
-            }else{
-                res.redirect('/sessions/login')
-            }
-        })
-    }else{
-        //res.send('You are not logged in!')
-        res.redirect('/sessions/login')
+    res.clearCookie(JWT_COOKIE_NAME).redirect('login')
+    // ----- -Comentado porque ya no uso sessions
+    // if (req.session?.user){
+    //     req.session.destroy(err => {
+    //         if (err){
+    //             res.status(500).render(('errors/base'), {
+    //                 error: err
+    //             })
+    //         }else{
+    //             res.redirect('/sessions/login')
+    //         }
+    //     })
+    // }else{
+    //     //res.send('You are not logged in!')
+    //     res.redirect('/sessions/login')
+    // }
+})
+
+router.get('/current', (req, res) => {
+    try{
+        res.cookie(JWT_COOKIE_NAME, req.user.token).send(req.user)
+    }catch (error){
+        res.send({ status: 'error', error: 'Not logged in'})
     }
 })
 

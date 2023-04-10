@@ -10,9 +10,10 @@ import chatRouter from './router/chat.router.js';
 import sessionRouter from './router/session.router.js';
 import ProductManager from'./dao/ProductManager.js';
 import MessageManager from './dao/MessagesManager.js'
-import __dirname from './utils.js';
+import __dirname, { passportCall } from './utils.js';
 import passport from 'passport';
 import initializePassport from './config/passport.config.js';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 const httpServer = app.listen(3000, () => { console.log('Server connected!')})
@@ -23,6 +24,7 @@ app.engine('handlebars', handlebars.engine())
 app.set('views', __dirname + '/views')
 app.set('view engine', 'handlebars')
 app.use(express.static(__dirname + '/../public'))
+app.use(cookieParser())
 app.use(express.json());
 app.use(express.urlencoded({extended: true}))
 
@@ -34,15 +36,16 @@ const dbName = 'ecommerce'
 //mongoose.set('strictQuery', false)
 
 app.use(session({
-    store: MongoStore.create({
-        mongoUrl: uri,
-        dbName: dbName,
-        mongoOptions: {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        },
-        ttl: 100
-    }),
+    //------No grabo la sesión en la BD
+    // store: MongoStore.create({
+    //     mongoUrl: uri,
+    //     dbName: dbName,
+    //     mongoOptions: {
+    //         useNewUrlParser: true,
+    //         useUnifiedTopology: true
+    //     },
+    //     ttl: 100
+    // }),
     secret: 'secret',
     resave: true,
     saveUninitialized: true
@@ -52,7 +55,9 @@ initializePassport()
 app.use(passport.initialize())
 app.use(passport.session())
 
-app.use('/api/products', productsRouter);
+//app.use('/api/products', productsRouter);
+app.use('/api/products', passportCall('current'), productsRouter);
+app.use('/sessions/current', passportCall('current'), sessionRouter);
 app.use('/api/carts', cartsRouter);
 app.use('/sessions', sessionRouter);
 app.use('/', chatRouter);
@@ -71,18 +76,6 @@ mongoose.connect(uri, {
 })
 
 let messages = []
-
-// await productModel.create({
-//     id: 1,
-//     title: "Producto 1",
-//     description: "Este es el primer producto",
-//     price: 100,
-//     category: "Electronic",
-//     status: "true",
-//     thumbnails: [],
-//     code: "aaa111",
-//     stock: 20
-//   })
 
 io.on('connection', socket => {
     console.log('New client connected!')

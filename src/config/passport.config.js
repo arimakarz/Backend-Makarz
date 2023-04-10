@@ -1,12 +1,18 @@
 import passport from "passport";
 import local from 'passport-local'
+import passport_jwt from 'passport-jwt'
 import UserModel from "../models/user.model.js";
-import { createHash, isValidPassword } from "../utils.js";
 import GitHubStrategy from 'passport-github2'
 import CartsManager from "../dao/CartsManager.js";
+import { createHash, isValidPassword, generateToken, extractCookie } from "../utils.js";
+import { JWT_PRIVATE_KEY } from './credentials.js'
 
 const LocalStrategy = local.Strategy
 const cartsManager = new CartsManager()
+
+const JWTStrategy = passport_jwt.Strategy
+const ExtractJWT = passport_jwt.ExtractJwt
+
 const initializePassport = () => {
     
     passport.use('register', new LocalStrategy({
@@ -54,6 +60,11 @@ const initializePassport = () => {
                 return done(null, user)
             }
             if (!isValidPassword(user, password)) return done(null, false)
+
+            //Creating token
+            const token = generateToken(user)
+            user.token = token
+
             return done(null, user)
         }catch (err) {
             return ({ status: 'error', error: err})
@@ -82,6 +93,13 @@ const initializePassport = () => {
         }catch(error){
             return done('Error to login with github')
         }
+    }))
+
+    passport.use('current', new JWTStrategy({
+        jwtFromRequest: ExtractJWT.fromExtractors([extractCookie]),
+        secretOrKey: JWT_PRIVATE_KEY
+    }, async(jwt_payload, done) => {
+        return done(null, jwt_payload)
     }))
 
     passport.serializeUser((user, done) => {

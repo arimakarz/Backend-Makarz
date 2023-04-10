@@ -19,10 +19,6 @@ router.get('/', async (req, res) => {
     if (!limit) limit = 10
     if (!sort) sort = 0
     
-    //Interpreté de la consigna que 'query' recibe si es búsqueda por stock o por categoría.
-    //1 implica que busco productos con stock positivo.
-    //Otro valor de texto significa búsqueda por categoría.
-    //Si no se pasa ningún valor, devuelve todo.
     if (query){
         if (query == '1'){
             filter = { stock: {$gt: 0} }
@@ -44,10 +40,11 @@ router.get('/', async (req, res) => {
         const user = await UserModel.findOne({ email: req.session.user.email})
         if (user){
             results.greetingName = user.first_name
-            results.cartId = user.cartId
-            console.log(user)
-            // const cart = await cartsManager.getNewCart()
-            // results.cartId = cart._id.valueOf()
+            //results.cartId = user.cartId
+            
+            const cart = await cartsManager.getNewCart()
+            results.cartId = cart._id.valueOf()
+            
             if (req.session.user.role == 'admin'){
                 results.admin = true
             }else{
