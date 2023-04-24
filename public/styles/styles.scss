@@ -16,7 +16,7 @@
     font-size: 16px;
     display: flex;
     flex-direction: column;
-    margin-left: 40%;
+    //margin-left: 25px;
 }
 
 .formItem{
@@ -50,6 +50,8 @@ h1{
 }
 
 .pageNumber{
+    width: 25%;
+    margin: auto;
     font-size: 18px;
     font-weight: bold;
     text-align: center;
@@ -74,18 +76,53 @@ h1{
         width: 150px;
         text-align: center;
     }
+
+    .description{
+        width: 200px;
+    }
+}
+
+.loginContainer{
+    margin-left: 30%;
+    height: auto;
+    width: 40%;
+    display: flex;
+    flex-flow: column nowrap;
+    text-align: center;
+    border: 2px double black;
+    padding: 15px;
+    text-align: center;
 }
 
 .formLogin{
     text-align: center;
-    width: 350px;
-    margin-left: 40%;
+    height: auto;
+    //margin-left: 30%;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    row-gap: 15px;
+
+    .text{
+        width: 200px;
+    }
+
+    .label{
+        text-align: right;
+        margin-right: 5px;
+    }
 }
 
-.loginButtons{
+.buttons{
     display: flex;
     flex-direction: row;
-    width: 200px;
-    justify-content: space-between;
-    margin: 15px 20%;
+    width: 100%;
+    justify-content: space-around;
+    margin-left: 100%;
+    margin-top: 20px;
+}
+
+.message{
+    position: absolute;
+    left: 25%;
+    top: 15%;
 }

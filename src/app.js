@@ -4,21 +4,22 @@ import { Server } from 'socket.io';
 import mongoose from 'mongoose';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
+import passport from 'passport';
+import cookieParser from 'cookie-parser';
 import productsRouter from './router/products.router.js';
 import cartsRouter from './router/carts.router.js';
 import chatRouter from './router/chat.router.js';
 import sessionRouter from './router/session.router.js';
-import ProductManager from'./dao/ProductManager.js';
+import productManager from'./dao/ProductManager.js';
 import MessageManager from './dao/MessagesManager.js'
-import __dirname, { passportCall } from './utils.js';
-import passport from 'passport';
 import initializePassport from './config/passport.config.js';
-import cookieParser from 'cookie-parser';
+import __dirname, { passportCall } from './utils.js';
+import config from './config/config.js'
 
 const app = express();
 const httpServer = app.listen(3000, () => { console.log('Server connected!')})
 const io = new Server(httpServer);
-const productManager = new ProductManager(__dirname + '/../products.json');
+//const productManager = new ProductManager(__dirname + '/../products.json');
 
 app.engine('handlebars', handlebars.engine()) 
 app.set('views', __dirname + '/views')
@@ -30,9 +31,10 @@ app.use(express.urlencoded({extended: true}))
 
 
 //DB Connection
-const uri = 'mongodb+srv://coder:coder@cluster0.wxncseh.mongodb.net/';
-const dbName = 'ecommerce'
-
+// const uri="mongodb+srv://coder:coder@cluster0.wxncseh.mongodb.net/"
+// const dbName = "ecommerce"
+const uri = config.app.uri
+const dbName = config.app.dbName
 //mongoose.set('strictQuery', false)
 
 app.use(session({
@@ -56,7 +58,7 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 //app.use('/api/products', productsRouter);
-app.use('/api/products', passportCall('current'), productsRouter);
+app.use('/api/products', passportCall('github'), productsRouter);
 app.use('/sessions/current', passportCall('current'), sessionRouter);
 app.use('/api/carts', cartsRouter);
 app.use('/sessions', sessionRouter);
@@ -86,6 +88,15 @@ io.on('connection', socket => {
     })
 
     socket.on('deleteProduct', id => {
+        const result = productManager.deleteProduct(id);
+        const productList = productManager.getProducts();
+        io.emit('realTimeProducts', {
+            productList,
+            result
+        })
+    })
+
+    socket.on('deleteProductById', id => {
         const result = productManager.deleteProduct(id);
         const productList = productManager.getProducts();
         io.emit('realTimeProducts', {

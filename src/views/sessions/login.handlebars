@@ -1,9 +1,12 @@
-<h1>User login</h1>
-<div class="formLogin">
-    <form action="/sessions/login" method="post" style="text-align: center;">
-        Email: <input type="text" name="email"><br/>
-        Password: <input type="text" name="password"><br/>
-        <div class="loginButtons">
+<h1>Welcome to my site!</h1>
+<hr>
+<div class="loginContainer">
+    <form action="/sessions/login" method="post" class="formLogin">
+        <label for="email" class="label">Email:</label>
+        <input class="text" type="text" name="email">
+        <label for="password" class="label">Password:</label>
+        <input class="text" type="password" name="password">
+        <div class="buttons">
             <input type="submit" value="Login"><br/>
             {{err}}
             <a href="/sessions/github">
@@ -12,7 +15,8 @@
             </a>
         </div>
     </form>
-    <form action="/sessions/register">
-        <button>Register</button>
+    <form action="/sessions/register" style="margin-top: 20px">
+        {{!-- <button>Register</button> --}}
+        <input type="submit" value="Register"><br/>
     </form>
 </div>

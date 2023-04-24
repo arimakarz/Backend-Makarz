@@ -2,6 +2,7 @@
     {{#if productsArray}}
         <h1>Your cart</h1>
         <table class="cartInfo">
+        {{!-- <table class="table table-striped"> --}}
             <tr>
                 <th>Title</th>
                 <th>Description</th>
@@ -11,9 +12,10 @@
             {{#each productsArray}}
                 <tr>
                     <td>{{this.product.title}}</td>
-                    <td>{{this.product.description}}</td>
+                    <td class="description">{{this.product.description}}</td>
                     <td>{{this.product.price}}</td>
                     <td>{{quantity}}</td>
+                    <td><button>Remove</button></td>
                 </tr>
             {{/each}}
         </table>
@@ -21,8 +23,9 @@
             <a href="/api/products">Continue shopping</a>
         </div>
     {{else}}
-        <div>
+        <div class="message">
             <p>Empty cart. You don't have any products yet.</p>
+            <a href="/api/products"><button>Back</button></a>
         </div>
     {{/if}}
 </div>
