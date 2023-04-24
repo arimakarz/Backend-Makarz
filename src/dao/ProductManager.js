@@ -1,4 +1,3 @@
-// import fs from 'fs';
 import productModel from '../models/products.model.js';
 
 class ProductManager{
@@ -6,15 +5,6 @@ class ProductManager{
         this.path = path;
         this.products = [];
     }
-
-    // createId = () => {
-    //     const countProducts = this.products.length;
-    //     if (countProducts === 0){
-    //         return 1;
-    //     }else{
-    //         return (this.products[countProducts - 1].id) + 1;
-    //     }
-    // }
 
     getProducts = async (page, limit, sort, filter) => {
         //const productsDB = await productModel.find().lean().exec()
@@ -97,4 +87,4 @@ class ProductManager{
     }
 }
 
-export default ProductManager
+export default new ProductManager()

@@ -1,18 +1,19 @@
-<h1>Product List</h1>
-<h3>Bienvenido, {{greetingName}}</h3>
+{{#if results.admin}}
+    <h1>Product Manager</h1>
+{{/if}}
+<h3>Bienvenido, {{results.greetingName}}</h3>
 <div class="menubar">
-    {{#unless admin}}
+    {{#unless results.admin}}
         <form action="/api/carts/" method="post">
             <button>Create new cart</button>
         </form>
-        {{!-- <a href="/api/carts/64150d8d0b859a25e0d24160">See my cart</a> --}}
-        <a href="/api/carts/{{cartId}}">See my cart</a>
+        <a href="/api/carts/{{results.cartId}}">See my cart</a>
     {{/unless}}
     <a href="/sessions/logout">Logout</a>
 </div>
-{{#if admin}}
-    <label style="font-size:20px;font-weight:bold;" for="">New product</label>
+{{#if results.admin}}
     <div class="formData">
+        <label style="font-size:20px;font-weight:bold;" for="">Add new product</label>
         <form action="/api/products" method="post">
             <div class="formItem">
                 <label for="title">Title:</label>
@@ -42,8 +43,8 @@
         </form>
     </div>
     <br>
-    <label style="font-size:20px;font-weight:bold;" for="">Delete by Id</label>
     <div class="deleteById">
+        <label style="font-size:20px;font-weight:bold;" for="">Delete product by Id</label>
         <form action="/api/products/realtimeproducts" method="delete">
             Id: <input type="text" id="idProduct">
             <input type="submit" id="deleteProduct" value="Delete this product">
@@ -52,31 +53,51 @@
 {{/if}}
 <hr>
 <div class="showProducts">
-    {{#each docs}}
+    {{#each results.docs}}
         <div class="eachProduct">        
             <a href="/api/products/{{this._id}}"><h3>{{ this.title }}</h3></a>
             <p>Description: {{ this.description }}</p>
             <p>Price: {{ this.price }}</p>
             <p>Category: {{ this.category }}</p>
             <p>Stock: {{ this.stock }}</p>
-            {{#unless ../admin}}
-                <form action="/api/carts/{{../cartId}}/products/{{this._id}}" method="post">
+            {{#unless ../results.admin}}
+                <form action="/api/carts/{{../results.cartId}}/products/{{this._id}}" method="post">
                     {{!-- <label for="qty">Quantity: </label>
                     <input type="text" id="qty"> --}}
                     <button id="addToCart">Add to cart</button>
                 </form> 
             {{/unless}}
+            {{#if ../results.admin}}
+                <form action="/api/products/{{this._id}}" method="delete">
+                    <input type="button" id="deleteById" value="Delete product"/>
+                </form> 
+            {{/if}}
         </div>
     {{/each}}
 </div>
 <div class="pageNumber">
-    {{#if hasPrevPage}}
-        <a href="{{previousLink}}">Anterior</a>
+    {{!-- {{#if results.hasPrevPage}}
+        <a href="{{results.previousLink}}"><<</a>
     {{/if}}
-    <label for="">{{ page }}</label>
-    {{#if hasNextPage }}
-        <a href="{{nextLink}}">Siguiente</a>
-    {{/if}}
+    <label for="">{{ results.page }}</label>
+    {{#if results.hasNextPage }}
+        <a href="{{results.nextLink}}">>></a>
+    {{/if}} --}}
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <li class="page-item {{#if results.hasPrevPage}}{{else}}disabled{{/if}}">
+                <a class="page-link" href="products?page={{results.prevPage}}&limit={{results.limit}}">Anterior</a>
+            </li>
+            {{#each pagination}}
+                <li class="page-item {{#if this.active}}active{{else}}{{/if}}">
+                    <a class="page-link" href="/api/products?page={{this.page}}&limit={{../results.limit}}">{{this.page}}</a>
+                </li>
+            {{/each}}
+            <li class="page-item {{#if results.hasNextPage}}{{else}}disabled{{/if}}">
+                <a class="page-link" href="products?page={{results.nextPage}}&limit={{results.limit}}">Siguiente</a>
+            </li>
+        </ul>       
+    </nav>
 </div>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/client.js"></script>

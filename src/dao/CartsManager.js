@@ -92,4 +92,4 @@ class CartsManager{
     }
 }
 
-export default CartsManager
+export default new CartsManager()
