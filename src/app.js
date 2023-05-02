@@ -25,17 +25,14 @@ app.engine('handlebars', handlebars.engine())
 app.set('views', __dirname + '/views')
 app.set('view engine', 'handlebars')
 app.use(express.static(__dirname + '/../public'))
-app.use(cookieParser())
+app.use(cookieParser(config.app.cookie_sign))
 app.use(express.json());
 app.use(express.urlencoded({extended: true}))
 
 
 //DB Connection
-// const uri="mongodb+srv://coder:coder@cluster0.wxncseh.mongodb.net/"
-// const dbName = "ecommerce"
 const uri = config.app.uri
 const dbName = config.app.dbName
-//mongoose.set('strictQuery', false)
 
 app.use(session({
     //------No grabo la sesión en la BD
@@ -57,8 +54,7 @@ initializePassport()
 app.use(passport.initialize())
 app.use(passport.session())
 
-//app.use('/api/products', productsRouter);
-app.use('/api/products', passportCall('github'), productsRouter);
+app.use('/api/products', passportCall('current'), productsRouter);
 app.use('/sessions/current', passportCall('current'), sessionRouter);
 app.use('/api/carts', cartsRouter);
 app.use('/sessions', sessionRouter);
@@ -108,6 +104,7 @@ io.on('connection', socket => {
     socket.on("message", async data =>{
         messages.push(data)
         io.emit('logs', messages)
+        console.log(data)
         const messageManager = new MessageManager(data.user)
         await messageManager.addMessage(data.user, data.message)
     })

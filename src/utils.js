@@ -6,7 +6,7 @@ import passport from 'passport'
 import { Strategy } from 'passport-github2'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-import { JWT_PRIVATE_KEY, JWT_COOKIE_NAME} from './config/credentials.js'
+import { JWT_PRIVATE_KEY, JWT_COOKIE_NAME } from './config/credentials.js'
 
 export default __dirname
 
@@ -23,8 +23,20 @@ export const generateToken = user => {
     return token
 }
 
+export const authToken = (req, res, next) => {
+    let token = req.headers.auth
+    if (!token) token = res.cookies[JWT_COOKIE_NAME]
+    if (!token) res.status(401).send({ error: 'Not auth' })
+    jwt.verify(token, JWT_PRIVATE_KEY, (error, credentials) => {
+        if (error) res.status(403).send({ error: 'Not authorized' })
+        else req.user = credentials.user
+        next()
+    })
+}
+
 export const extractCookie = req => {
-    return ( req && req.cookies ) ? req.cookies[JWT_COOKIE_NAME] : null
+    const token = ( req && req.cookies ) ? req.cookies[JWT_COOKIE_NAME] : null
+    return token
 }
 
 export const passportCall = strategy => {

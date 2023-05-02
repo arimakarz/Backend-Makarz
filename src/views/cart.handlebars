@@ -22,6 +22,9 @@
         <div style="margin:25px;">
             <a href="/api/products">Continue shopping</a>
         </div>
+        <form action="/api/carts/{{cid}}/purchase" method="post">
+            <input type="submit" value="Purchase cart"/>
+        </form>
     {{else}}
         <div class="message">
             <p>Empty cart. You don't have any products yet.</p>

@@ -1,9 +1,11 @@
 import mongoose from 'mongoose'
 import mongoosePaginate from 'mongoose-paginate-v2'
 
-const productCollection = 'products';
+//const productCollection = 'products';
+const collectionName = 'products'
 
-const productSchema = new mongoose.Schema({
+//const productSchema = new mongoose.Schema({
+const schema = new mongoose.Schema({
     id: Number,
     title: String,
     description: String,
@@ -21,8 +23,13 @@ const productSchema = new mongoose.Schema({
     stock: Number
 })
 
-productSchema.plugin(mongoosePaginate)
+//productSchema.plugin(mongoosePaginate)
+schema.plugin(mongoosePaginate)
 
-const productModel = mongoose.model(productCollection, productSchema)
+//const productModel = mongoose.model(productCollection, productSchema)
 
-export default productModel
+//export default productModel
+export default {
+    collectionName,
+    schema
+}

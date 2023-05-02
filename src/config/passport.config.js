@@ -1,11 +1,14 @@
 import passport from "passport";
 import local from 'passport-local'
 import passport_jwt from 'passport-jwt'
-import UserModel from "../models/user.model.js";
+//import nodemailer from 'nodemailer'
 import GitHubStrategy from 'passport-github2'
+import UserModel from "../models/user.model.js";
 import cartsManager from "../dao/CartsManager.js";
-import { createHash, isValidPassword, generateToken, extractCookie } from "../utils.js";
-import { JWT_PRIVATE_KEY } from './credentials.js'
+import { createHash, isValidPassword, generateToken, authToken, extractCookie } from "../utils.js";
+import { sendMail, sendSMS } from '../functions.js'
+import { JWT_PRIVATE_KEY, JWT_COOKIE_NAME } from './credentials.js'
+import UsersDTO from "../dto/users.js";
 
 const LocalStrategy = local.Strategy
 const JWTStrategy = passport_jwt.Strategy
@@ -25,8 +28,8 @@ const initializePassport = () => {
                 return done(null, false)
             }
 
-            const resultCart = await cartsManager.createCart()
-            const newCart = await cartsManager.getNewCart()
+            //const resultCart = await cartsManager.createCart()
+            //const newCart = await cartsManager.getNewCart()
 
             const newUser = {
                 first_name,
@@ -34,16 +37,25 @@ const initializePassport = () => {
                 age,
                 email,
                 password: createHash(password),
-                role: 'user',
-                cartId: newCart._id
+                role: 'user'
+                //cartId: newCart._id
             }
             const result = await UserModel.create(newUser)
             
+            //Send confirmation email
+            let textMessage = {
+                subject: `¡Bienvenido, ${newUser.first_name}`,
+                text: 'Se ha registrado un usuario nuevo. ¡Ahora podes hacer tus compras con nosotros!'
+            }
+            sendMail(newUser, textMessage)
+            sendSMS(111)
+
             return done(null, result)
 
         // }catch (err) {
         //     return done('Error getting user', false)
         // }
+        
     }))
 
     passport.use('login', new LocalStrategy({
@@ -51,12 +63,13 @@ const initializePassport = () => {
     }, async(username, password, done) => {
         try{
             const user = await UserModel.findOne({ email: username })
-            console.log(user)
             if (!user) {
                 console.log('User doesnt exist')
                 return done(null, user)
             }
             if (!isValidPassword(user, password)) return done(null, false)
+            
+            //req.session.user = user
 
             //Creating token
             const token = generateToken(user)
@@ -99,7 +112,11 @@ const initializePassport = () => {
         jwtFromRequest: ExtractJWT.fromExtractors([extractCookie]),
         secretOrKey: JWT_PRIVATE_KEY
     }, async(jwt_payload, done) => {
-        return done(null, jwt_payload)
+        try {
+            return done(null, jwt_payload)
+        }catch (error) {
+            return done(error)
+        }
     }))
 
     passport.serializeUser((user, done) => {

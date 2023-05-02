@@ -1,6 +1,7 @@
 import productManager from "../dao/ProductManager.js";
 import cartsManager from '../dao/CartsManager.js';
 import UserModel from '../models/user.model.js';
+import UsersDTO from "../dto/users.js";
 
 export async function getProducts(req, res){
     let page = parseInt(req.query.page);
@@ -20,7 +21,7 @@ export async function getProducts(req, res){
             filter = ({category: query})
         }
     }else{
-        query=""
+        query = ""
     }
     
     const results = await productManager.getProducts(page, limit, sort, filter);
@@ -38,13 +39,11 @@ export async function getProducts(req, res){
         })
     }
     
-    try{
-        const user = await UserModel.findOne({ email: req.session.user.email})
-        console.log(user)
-        if (user){
-            results.greetingName = user.first_name
-            //results.cartId = user.cartId
-            
+    //try{
+        //const user = await UserModel.findOne({ email: req.session.user.email})
+        const user = req.user
+        if (req.session.user){
+            results.greetingName = new UsersDTO(req.user.user).full_name
             const cart = await cartsManager.getNewCart()
             results.cartId = cart._id.valueOf()
             
@@ -57,9 +56,9 @@ export async function getProducts(req, res){
         }else{
             res.send('Error loading user...')
         }
-    }catch (error) {
-        res.status(401).redirect('/sessions/login')
-    }
+    // }catch (error) {
+    //     res.status(401).redirect('/sessions/login')
+    // }
 
 }
 

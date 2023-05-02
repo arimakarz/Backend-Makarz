@@ -1,4 +1,4 @@
-// import fs from 'fs';
+import mongoose from 'mongoose';
 import cartModel from '../models/carts.models.js';
 
 // //const path = __dirname + '/../carts.json'
@@ -8,32 +8,31 @@ class CartsManager{
     constructor(){
         this.id = -1;
         this.products = [];
+        this.model = mongoose.model(cartModel.collectionName, cartModel.schema)
     }
 
     getCart = async (id) => {
-        const results = await cartModel.findOne({_id: id}).populate('products.product').lean()
+        const results = await this.model.findOne({_id: id}).populate('products.product').lean()
         // if (results) return { status: "success", payload: results}
         // else return { status: "error", message: "Cant find cart ID."}
         return results
     }
 
     createCart = async () => {
-        const results = await cartModel.create({})
+        const results = await this.model.create({})
         if (results) return { status: "success", message: "Cart createad!"}
         else return { status: "error", message: "Couldnt create cart."}
-        //process.exit(1)
-        return results
     }
 
     getNewCart = async() => {
-        return cartModel.findOne({}).sort({_id:-1}).limit(1);
+        return this.model.findOne({}).sort({_id:-1}).limit(1);
     }
 
     addToCart = async (cid, pid) => {
-        const cart = await cartModel.findOne({_id: cid})
+        const cart = await this.model.findOne({_id: cid})
         if (cart){
             cart.products.push( {product: pid, quantity: 1})
-            const result = await cartModel.updateOne({_id: cid}, cart)
+            const result = await this.model.updateOne({_id: cid}, cart)
             if (result.modifiedCount > 0) return ({ status: "success", message: "Cart updated"})
             else return ({ status: "error", message: "Error. Cant add product."})
         }else{
@@ -42,14 +41,14 @@ class CartsManager{
     }
 
     updateCart = async(cid, products) => {
-        const cart = await cartModel.find({_id: cid})
-        const result = await cartModel.updateOne({_id: cid}, {$set: {products: products}})
+        const cart = await this.model.find({_id: cid})
+        const result = await this.model.updateOne({_id: cid}, {$set: {products: products}})
         if (result.modifiedCount > 0) return ({ status: "sucess", message: "Cart updated"})
         else return ({ status: "error", message: "Error. Cant update cart."})
     }
 
     updateQuantity = async(cid, pid, qty) => {
-        const result = await cartModel.updateOne(
+        const result = await this.model.updateOne(
             { 
                 _id: cid, 
                 "products.product": pid
@@ -65,7 +64,7 @@ class CartsManager{
     }
 
     deleteFromCart = async (cid, pid) => {
-        const listUpdated = await cartModel.updateMany({_id: cid},
+        const listUpdated = await this.model.updateMany({_id: cid},
             {$pull: {products: {product: pid }}}
         )
         console.log(listUpdated)
@@ -74,7 +73,7 @@ class CartsManager{
     }
 
     deleteAll = async(cid) => {
-        const result = await cartModel.updateOne(
+        const result = await this.model.updateOne(
             { 
                 _id: cid
             }, 

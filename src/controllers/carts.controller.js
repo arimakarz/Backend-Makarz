@@ -3,7 +3,6 @@ import cartsManager from '../dao/CartsManager.js'
 export async function createCart (req, res) {
     const response = await cartsManager.createCart();
     if (response.status == "success"){
-        //res.status(201).json({ response })
         res.status(201).redirect('/api/products')
     } 
     else res.status(400).json({ response })
@@ -14,20 +13,17 @@ export async function getCartById(req, res){
     try{
         const response = await cartsManager.getCart(cid);
         const productsArray = response.products
-        res.status(200).render('cart', {productsArray})
+        res.status(200).render('cart', {productsArray, cid})
     }catch{ res.status(400).send("Cart ID not found.")}
-    // if (!response) response.json({response})
-    // else res.render('cart', productsList)
 }
 
 export async function addToCart (req, res){
-    //const { cid, pid } = req.body
     const { cid, pid } = req.params
     const response = await cartsManager.addToCart(cid, pid);
 
     const cartUpdated = await cartsManager.getCart(cid);
     const productsArray = cartUpdated.products
-    res.render('cart', {productsArray})
+    res.render('cart', {productsArray, cid})
 }
 
 export async function deleteProductFromCart(req, res){

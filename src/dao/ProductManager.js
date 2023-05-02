@@ -1,9 +1,11 @@
+import mongoose from 'mongoose'
 import productModel from '../models/products.model.js';
 
 class ProductManager{
     constructor(path){
         this.path = path;
         this.products = [];
+        this.model = mongoose.model(productModel.collectionName, productModel.schema)
     }
 
     getProducts = async (page, limit, sort, filter) => {
@@ -13,7 +15,7 @@ class ProductManager{
         sort = sort || 0
         filter = filter || ''
 
-        const productsDB = await productModel.paginate(
+        const productsDB = await this.model.paginate(
             filter, 
             {
                 page, 
@@ -30,7 +32,7 @@ class ProductManager{
     }
 
     getProductById = async (id) => {
-        const product = await productModel.findOne({_id: id})
+        const product = await this.model.findOne({_id: id})
         return product;
     }
 
@@ -40,12 +42,12 @@ class ProductManager{
             console.error(`No se puede agregar el producto ${title}. Faltan datos.`);
             return ({status: "error", message: `Product ${title} can't be added. Information is missing.`});
         }else{
-            const existingCode = await productModel.findOne({code: code})
+            const existingCode = await this.model.findOne({code: code})
             if (existingCode){
                 console.error(`No se puede agregar el producto ${title}. El código ya existe.`)
                 return ({status: "error", message: `Product ${title} can't be added. Existing code.`})
             }else{
-                await productModel.create({
+                await this.model.create({
                     //id: 1,
                     title: title,
                     description: description,
@@ -62,23 +64,15 @@ class ProductManager{
         }
     }
 
-    updateProduct = (updateProduct) => {
-        this.products = this.getProducts();
-        let index = this.products.indexOf(this.products.find((product)=>product.id == updateProduct.id));
-        if (index == -1) {
-            console.log('No se pudo actualizar el producto');
-            return ({status: "error", message: "Cannot update product."})
-        }else{
-            this.products[index] = updateProduct;
-            fs.writeFileSync(this.path, JSON.stringify(this.products, null, 2));
-            console.log('Producto actualizado existosamente.');
-            return ({status: "success", message: "Product updated!"})
-        }
+    updateProduct = async (updateProduct) => {
+        const result = await this.model.updateOne({_id: updateProduct.id}, {$set: {stock: updateProduct.stock}})
+        if (result.modifiedCount > 0) return ({ status: "sucess", message: "Product updated"})
+        else return ({ status: "error", message: "Error. Cant update product."})
     }
 
     deleteProduct = async (id) => {
         console.log(id)
-        const deletedProduct = await productModel.deleteOne({_id: id})
+        const deletedProduct = await this.model.deleteOne({_id: id})
         if(deletedProduct.deletedCount == 1){
             return ({ status: "success", message: "Product deleted."})
         }else{

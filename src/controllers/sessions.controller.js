@@ -15,7 +15,6 @@ export async function login(req, res){
     if (req.user.email == config.admin.mail){
         role = config.admin.role
     }
-
     req.session.user = {
         email: req.user.email,
         role

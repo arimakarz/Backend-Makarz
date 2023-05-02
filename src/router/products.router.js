@@ -1,10 +1,11 @@
 import { Router} from 'express';
 import { getProducts, getProductById, addProduct, updateProduct, deleteProduct } from '../controllers/products.controller.js';
 import productManager from '../dao/ProductManager.js';
+import { passportCall } from '../utils.js';
 
 const router = Router();
 
-router.get('/', getProducts)
+router.get('/', passportCall('current'), getProducts)
 
 router.get('/realtimeproducts', async (req, res) => {
     const { limit } = req.query;

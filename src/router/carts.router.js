@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { addToCart, createCart, deleteAllFromCart, deleteProductFromCart, getCartById, updateQuantity } from '../controllers/carts.controller.js';
+import { purchaseCart } from '../controllers/tickets.controller.js';
 import cartsManager from '../dao/CartsManager.js'
 
 const router = Router();
@@ -30,5 +31,8 @@ router.put('/:cid', (req, res) => {
     if (result.status == "success") res.render('cart', updatedCart)
     else res.status(400).send('Error updating cart.')
 })
+
+//Purchaste cart
+router.post('/:cid/purchase', purchaseCart)
 
 export default router

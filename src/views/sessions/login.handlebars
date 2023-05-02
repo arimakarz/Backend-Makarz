@@ -3,9 +3,9 @@
 <div class="loginContainer">
     <form action="/sessions/login" method="post" class="formLogin">
         <label for="email" class="label">Email:</label>
-        <input class="text" type="text" name="email">
+        <input class="text" type="text" name="email" id="email">
         <label for="password" class="label">Password:</label>
-        <input class="text" type="password" name="password">
+        <input class="text" type="password" name="password" id="password">
         <div class="buttons">
             <input type="submit" value="Login"><br/>
             {{err}}
@@ -20,3 +20,4 @@
         <input type="submit" value="Register"><br/>
     </form>
 </div>
+<script src="../../../public/js/index.js"></script>
