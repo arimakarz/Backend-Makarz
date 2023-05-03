@@ -1,5 +1,7 @@
 import mongoose from 'mongoose'
 import productModel from '../models/products.model.js';
+import {productService} from '../services/service.js';
+import {ObjectId} from 'mongodb'
 
 class ProductManager{
     constructor(path){
@@ -33,7 +35,10 @@ class ProductManager{
 
     getProductById = async (id) => {
         const product = await this.model.findOne({_id: id})
+        console.log(product)
         return product;
+        // let product = await productService.getById({_id: id})
+        // return product
     }
 
     addProducts = async ({title, description, price, category, status, thumbnails, code, stock}) => {
@@ -65,7 +70,9 @@ class ProductManager{
     }
 
     updateProduct = async (updateProduct) => {
-        const result = await this.model.updateOne({_id: updateProduct.id}, {$set: {stock: updateProduct.stock}})
+        console.log(updateProduct)
+        const result = await this.model.updateOne({_id: new ObjectId(updateProduct.id)}, {$set: {stock: updateProduct.stock}})
+        console.log(result)
         if (result.modifiedCount > 0) return ({ status: "sucess", message: "Product updated"})
         else return ({ status: "error", message: "Error. Cant update product."})
     }

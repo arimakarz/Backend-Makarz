@@ -6,7 +6,7 @@ const collectionName = 'products'
 
 //const productSchema = new mongoose.Schema({
 const schema = new mongoose.Schema({
-    id: Number,
+    id: String,
     title: String,
     description: String,
     price: Number,

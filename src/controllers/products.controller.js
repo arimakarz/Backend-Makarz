@@ -64,10 +64,10 @@ export async function getProducts(req, res){
 
 export async function getProductById(req, res){
     const { pid } = req.params;
-    try{
+    //try{
         const product = await productManager.getProductById(pid);
         res.render('product', product);
-    }catch{ res.status(400).send('Product ID not found.')}
+    //}catch{ res.status(400).send('Product ID not found.')}
 }
 
 export async function addProduct(req, res){

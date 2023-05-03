@@ -19,26 +19,29 @@ class TicketsManager{
                 totalAmount +=product.product.price * product.quantity
                 const updateProduct = product.product
                 updateProduct.stock -= product.quantity
-                //const response = await productManager.updateProduct(updateProduct)
+                const responseUpdate = await productManager.updateProduct(updateProduct)
+                const responseRemoveFromCart = await cartsManager.deleteFromCart(cart.id, product.product.id)
             }else{
                 productWithoutStock.push(product.product)
             }
         })
 
-        const results = await this.model.create({
-            amount: totalAmount,
-            purchaser: cart.user.email
-        })
+        if (totalAmount > 0){
+            const results = await this.model.create({
+                amount: totalAmount,
+                purchaser: cart.user.email
+            })
         
-        if (results){
-            let textMessage = {
-                subject: '¡Compra confirmada!',
-                text: 'Gracias por comprar con nostros. Próximamente podrá disfrutar de nuestros productos'
-            }
-            sendMail(cart.user, textMessage)
-            return { status: "success", message: "Cart purchased!"}
-        } 
-        else return { status: "error", message: "Couldn't purchase cart."}
+            if (results){
+                let textMessage = {
+                    subject: '¡Compra confirmada!',
+                    text: 'Gracias por comprar con nostros. Próximamente podrá disfrutar de nuestros productos'
+                }
+                sendMail(cart.user, textMessage)
+                return { status: "success", message: "Cart purchased!"}
+            } 
+            else return { status: "error", message: "Couldn't purchase cart."}
+        }else return { status: "error", message: "Oh no! There are no items in stock."}
     }
 
     verifyStock = ( product, quantity ) => {

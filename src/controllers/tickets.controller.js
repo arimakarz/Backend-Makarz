@@ -13,5 +13,5 @@ export async function purchaseCart(req, res){
     if (response.status == "success"){
         res.status(201).redirect('/api/products')
     } 
-    else res.status(400).json({ response })
+    else res.status(400).render('errors/base', { response })
 }

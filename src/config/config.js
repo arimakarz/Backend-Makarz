@@ -4,7 +4,7 @@ dotenv.config()
 
 export default {
     app:{
-        //persistence: process.env.PERSISTENCE,
+        persistence: process.env.PERSISTENCE,
         uri: process.env.MONGO_URL,
         dbName: process.env.DB_NAME,
         cookie_sign: process.env.COOKIE_SIGN,

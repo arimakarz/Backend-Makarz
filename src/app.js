@@ -33,6 +33,7 @@ app.use(express.urlencoded({extended: true}))
 //DB Connection
 const uri = config.app.uri
 const dbName = config.app.dbName
+mongoose.set('strictQuery', false)
 
 app.use(session({
     //------No grabo la sesión en la BD

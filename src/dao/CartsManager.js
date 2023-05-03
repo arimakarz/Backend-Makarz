@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import cartModel from '../models/carts.models.js';
+import { cartsService } from '../services/service.js';
 
 // //const path = __dirname + '/../carts.json'
 // const path ='/Users/arielamakarz/Documents/Coderhouse/Backend/Backend-Makarz/carts.json'
@@ -13,9 +14,9 @@ class CartsManager{
 
     getCart = async (id) => {
         const results = await this.model.findOne({_id: id}).populate('products.product').lean()
-        // if (results) return { status: "success", payload: results}
-        // else return { status: "error", message: "Cant find cart ID."}
         return results
+        // let cart = await cartsService.getById({_id: id})
+        // return cart
     }
 
     createCart = async () => {
