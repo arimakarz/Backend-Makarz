@@ -71,7 +71,7 @@ class ProductManager{
 
     updateProduct = async (updateProduct) => {
         console.log(updateProduct)
-        const result = await this.model.updateOne({_id: new ObjectId(updateProduct.id)}, {$set: {stock: updateProduct.stock}})
+        const result = await this.model.updateOne({_id: new ObjectId(updateProduct.id)}, updateProduct)
         console.log(result)
         if (result.modifiedCount > 0) return ({ status: "sucess", message: "Product updated"})
         else return ({ status: "error", message: "Error. Cant update product."})

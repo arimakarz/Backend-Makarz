@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
 import ticketsModel from '../models/tickets.models.js';
 import productManager from '../dao/ProductManager.js'
+import cartsManager from './CartsManager.js';
 import { sendMail } from '../functions.js'
 
 class TicketsManager{
@@ -11,9 +12,20 @@ class TicketsManager{
         this.model = mongoose.model(ticketsModel.collectionName, ticketsSchema)
     }
 
+    generateTicketNumber = async () => {
+        let code = 1
+        const tickets = await this.model.find()
+        if (tickets){
+            code = parseInt(tickets[tickets.length - 1].code) + 1;
+        }else{
+            code = 1
+        }
+        return code
+    }
+
     createTicket = async ( cart ) => {
+        const code = await this.generateTicketNumber()
         let totalAmount = 0 
-        const productWithoutStock = []
         cart.products.map(async (product) => {
             if (this.verifyStock(product.product, product.quantity) == true){
                 totalAmount +=product.product.price * product.quantity
@@ -21,13 +33,12 @@ class TicketsManager{
                 updateProduct.stock -= product.quantity
                 const responseUpdate = await productManager.updateProduct(updateProduct)
                 const responseRemoveFromCart = await cartsManager.deleteFromCart(cart.id, product.product.id)
-            }else{
-                productWithoutStock.push(product.product)
             }
         })
 
         if (totalAmount > 0){
             const results = await this.model.create({
+                code: code,
                 amount: totalAmount,
                 purchaser: cart.user.email
             })

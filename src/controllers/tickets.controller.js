@@ -1,6 +1,5 @@
 import ticketsManager from '../dao/TicketsManager.js'
 import cartsManager from '../dao/CartsManager.js'
-import { response } from 'express'
 
 export async function purchaseCart(req, res){
     const { cid } = req.params
