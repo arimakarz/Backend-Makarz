@@ -15,6 +15,7 @@ import MessageManager from './dao/MessagesManager.js'
 import initializePassport from './config/passport.config.js';
 import __dirname, { passportCall } from './utils.js';
 import config from './config/config.js'
+import { generateProduct } from './mocking.js';
 
 const app = express();
 const httpServer = app.listen(3000, () => { console.log('Server connected!')})
@@ -60,6 +61,17 @@ app.use('/sessions/current', passportCall('current'), sessionRouter);
 app.use('/api/carts', cartsRouter);
 app.use('/sessions', sessionRouter);
 app.use('/', chatRouter);
+
+app.get('/mockingproducts', (req, res) => {
+    const docs = []
+    for (let index = 0; index < 100; index++){
+        docs.push(generateProduct())
+    }
+    const results = {
+        docs: docs
+    }
+    res.render('product', results)
+})
 
 mongoose.connect(uri, {
     dbName: dbName
