@@ -1,11 +1,23 @@
-<div class="message">
-    Error: {{error}}
-    <div class="buttons">
-        <form action="register">
+<div>    
+    <div class="message">
+        Error: {{error.message}}<br><br>
+        Status code: {{error.statusCode}}<br><br>
+        <p>Description: <br>{{error.cause}}</p>
+    </div>
+    {{#if error.registerButton}}
+    <div class="buttonsErrorPage">
+        <form action="/sessions/register">
             <button>Register</button>
         </form>
         <form action="/sessions/login">
             <button>Login</button>
         </form>
     </div>
+    {{else}}
+    <div class="buttonsErrorPage">
+        <form action={{error.backTo}}>
+            <button>Back</button>
+        </form>
+    </div>
+    {{/if}}
 </div>

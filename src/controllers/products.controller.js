@@ -1,7 +1,9 @@
 import productManager from "../dao/ProductManager.js";
 import cartsManager from '../dao/CartsManager.js';
-import UserModel from '../models/user.model.js';
 import UsersDTO from "../dto/users.js";
+import EError from '../services/errors/enums.js';
+import CustomError from "../services/errors/custom_error.js";
+import { generateErrorNewProduct } from "../services/errors/info.js";
 
 export async function getProducts(req, res){
     let page = parseInt(req.query.page);
@@ -54,7 +56,17 @@ export async function getProducts(req, res){
             }
             res.render('realTimeProducts', {results, pagination})
         }else{
-            res.send('Error loading user...')
+            const error = CustomError.createError({
+                name: 'Session expired',
+                cause: "Session expired",
+                message: 'The session has expired. Please log in again',
+                code: EError.UNAUTHORIZATION_ERROR,
+                backRoute: '/sessions/login'
+            })
+            error.statusCode = 500
+            
+            res.render('errors/base', { error })
+            //res.send('Error loading user...')
         }
     // }catch (error) {
     //     res.status(401).redirect('/sessions/login')
@@ -72,10 +84,23 @@ export async function getProductById(req, res){
 
 export async function addProduct(req, res){
     const newProduct = req.body;
+
     const response = await productManager.addProducts(newProduct);
-    const results = await productManager.getProducts();
-    if (response.status == "success") res.status(201).render('realTimeProducts',{results})
-    else res.status(400).json({response});
+    if (response.status == "success"){
+        const results = await productManager.getProducts();
+        res.status(201).render('realTimeProducts', { results })
+    } else {
+        const error = CustomError.createError({
+            name: 'Product creation error',
+            cause: generateErrorNewProduct(newProduct),
+            message: response.message,
+            code: EError.INVALID_TYPES_ERROR,
+            backRoute: '/api/products'
+        })
+        error.statusCode = 400
+        
+        res.render('errors/base', { error })
+    }
 }
 
 export async function updateProduct(req, res){

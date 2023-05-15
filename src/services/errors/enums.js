@@ -1,0 +1,9 @@
+const EErrors = {
+    ROUTING_ERROR: 1,
+    INVALID_TYPES_ERROR: 2,
+    DATABASES_ERROR: 3,
+    UNAUTHORIZATION_ERROR: 4,
+    EMAIL_REGISTERED_ERROR: 5
+}
+
+export default EErrors

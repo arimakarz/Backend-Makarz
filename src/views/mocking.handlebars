@@ -1,0 +1,24 @@
+<a href="/api/products/">Volver</a>
+<h2>100 mock products</h2>
+<div>
+    <table class="table table-striped">
+        <tr>
+            <th>Code</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Stock</th>
+        </tr>
+        {{#each docs}}
+            <tr>
+                <td>{{this.code}}</td>
+                <td>{{this.title}}</td>
+                <td>{{this.description}}</td>
+                <td>{{this.category}}</td>
+                <td>{{this.price}}</td>
+                <td>{{this.stock}}</td>
+            </tr>
+        {{/each}}
+    </table>
+</div>

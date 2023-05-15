@@ -1,14 +1,15 @@
 import passport from "passport";
 import local from 'passport-local'
 import passport_jwt from 'passport-jwt'
-//import nodemailer from 'nodemailer'
 import GitHubStrategy from 'passport-github2'
 import UserModel from "../models/user.model.js";
 import cartsManager from "../dao/CartsManager.js";
 import { createHash, isValidPassword, generateToken, authToken, extractCookie } from "../utils.js";
 import { sendMail, sendSMS } from '../functions.js'
 import { JWT_PRIVATE_KEY, JWT_COOKIE_NAME } from './credentials.js'
-import UsersDTO from "../dto/users.js";
+import CustomError from "../services/errors/custom_error.js";
+import EError from '../services/errors/enums.js';
+import { generateErrorInfo } from '../services/errors/info.js';
 
 const LocalStrategy = local.Strategy
 const JWTStrategy = passport_jwt.Strategy
@@ -21,15 +22,21 @@ const initializePassport = () => {
         usernameField: 'email'
     }, async (req, username, password, done) => {
         const { first_name, last_name, email, age } = req.body
+        
         //try{
             const user = await UserModel.findOne({ email: username })
             if (user){
                 console.log('User is already registered')
-                return done(null, false)
+                const error = CustomError.createError({
+                    name: 'User creation error',
+                    cause: generateErrorInfo(user),
+                    message: 'Email already registered',
+                    code: EError.EMAIL_REGISTERED_ERROR
+                })
+                error.statusCode = 403
+                error.registerButton = true
+                return done(error, false)
             }
-
-            //const resultCart = await cartsManager.createCart()
-            //const newCart = await cartsManager.getNewCart()
 
             const newUser = {
                 first_name,
@@ -38,8 +45,20 @@ const initializePassport = () => {
                 email,
                 password: createHash(password),
                 role: 'user'
-                //cartId: newCart._id
             }
+
+            if ((!first_name) || (!last_name) || (!email) || (!age) || (typeof(age) != 'number')){
+                const error = CustomError.createError({
+                    name: 'User creation error',
+                    cause: generateErrorInfo(newUser),
+                    message: 'Error trying to create a user',
+                    code: EError.INVALID_TYPES_ERROR
+                })
+                error.statusCode = 400
+                error.registerButton = true
+                return done(error, false)
+            }
+
             const result = await UserModel.create(newUser)
             
             //Send confirmation email
@@ -62,7 +81,6 @@ const initializePassport = () => {
         usernameField: 'email'
     }, async(username, password, done) => {
         try{
-            console.log(username)
             const user = await UserModel.findOne({ email: username })
             if (!user) {
                 console.log('User doesnt exist')

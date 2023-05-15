@@ -16,6 +16,9 @@ import initializePassport from './config/passport.config.js';
 import __dirname, { passportCall } from './utils.js';
 import config from './config/config.js'
 import { generateProduct } from './mocking.js';
+import errorHandler from './middlewares/error.js'
+import CustomError from './services/errors/custom_error.js';
+import EError from './services/errors/enums.js';
 
 const app = express();
 const httpServer = app.listen(3000, () => { console.log('Server connected!')})
@@ -26,6 +29,7 @@ app.engine('handlebars', handlebars.engine())
 app.set('views', __dirname + '/views')
 app.set('view engine', 'handlebars')
 app.use(express.static(__dirname + '/../public'))
+app.use('/chat', express.static(__dirname + '/../public'))
 app.use(cookieParser(config.app.cookie_sign))
 app.use(express.json());
 app.use(express.urlencoded({extended: true}))
@@ -70,8 +74,23 @@ app.get('/mockingproducts', (req, res) => {
     const results = {
         docs: docs
     }
-    res.render('product', results)
+    res.render('mocking', results)
 })
+
+app.all('*', (req, res, next) => {
+    const error = CustomError.createError({
+        name: 'Route error',
+        cause: 'Inexistent route',
+        message: `Can't find ${req.originalUrl} on the server`,
+        code: EError.ROUTING_ERROR,
+        backRoute: '/sessions/login'
+    })
+    error.statusCode = 404
+    if (req.session.user) error.backTo = '/api/products'
+    next(error)
+})
+
+app.use(errorHandler)
 
 mongoose.connect(uri, {
     dbName: dbName

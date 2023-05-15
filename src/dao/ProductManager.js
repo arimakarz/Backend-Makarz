@@ -2,6 +2,9 @@ import mongoose from 'mongoose'
 import productModel from '../models/products.model.js';
 import {productService} from '../services/service.js';
 import {ObjectId} from 'mongodb'
+import CustomError from '../services/errors/custom_error.js';
+import EError from '../services/errors/enums.js';
+import { generateErrorNewProduct } from "../services/errors/info.js";
 
 class ProductManager{
     constructor(path){
@@ -35,7 +38,6 @@ class ProductManager{
 
     getProductById = async (id) => {
         const product = await this.model.findOne({_id: id})
-        console.log(product)
         return product;
         // let product = await productService.getById({_id: id})
         // return product
@@ -45,26 +47,30 @@ class ProductManager{
         await this.getProducts();
         if (!title || !description || !price || !category || !code || !stock){
             console.error(`No se puede agregar el producto ${title}. Faltan datos.`);
-            return ({status: "error", message: `Product ${title} can't be added. Information is missing.`});
+            return ({ status: "error", message: `Product can't be added. Information is missing.` });
         }else{
-            const existingCode = await this.model.findOne({code: code})
-            if (existingCode){
-                console.error(`No se puede agregar el producto ${title}. El código ya existe.`)
-                return ({status: "error", message: `Product ${title} can't be added. Existing code.`})
+            if ((typeof(price) === 'number') && (typeof(stock) === 'number')){
+                const existingCode = await this.model.findOne({code: code})
+                if (existingCode){
+                    console.error(`No se puede agregar el producto ${title}. El código ya existe.`)
+                    return ({ status: "error", message: `Product ${title} can't be added. Existing code.` })
+                }else{
+                    await this.model.create({
+                        //id: 1,
+                        title: title,
+                        description: description,
+                        price: price,
+                        category: category,
+                        status: status,
+                        thumbnails: thumbnails,
+                        code: code,
+                        stock: stock
+                    })
+                    console.log('¡Producto agregado!');
+                    return ({status: "success", message: "Product added!"});
+                }
             }else{
-                await this.model.create({
-                    //id: 1,
-                    title: title,
-                    description: description,
-                    price: price,
-                    category: category,
-                    status: status,
-                    thumbnails: thumbnails,
-                    code: code,
-                    stock: stock
-                  })
-                console.log('¡Producto agregado!');
-                return ({status: "success", message: "Product added!"});
+                return ({ status: "error", message: `Product ${title} can't be added. Invalid types.` })
             }
         }
     }

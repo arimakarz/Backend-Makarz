@@ -1,24 +1,10 @@
-<a href="/api/products/">Volver</a>
-<h2>100 mock products</h2>
-<div>
-    <table class="table table-striped">
-        <tr>
-            <th>Code</th>
-            <th>Title</th>
-            <th>Description</th>
-            <th>Category</th>
-            <th>Price</th>
-            <th>Stock</th>
-        </tr>
-        {{#each docs}}
-            <tr>
-                <td>{{this.code}}</td>
-                <td>{{this.title}}</td>
-                <td>{{this.description}}</td>
-                <td>{{this.category}}</td>
-                <td>{{this.price}}</td>
-                <td>{{this.stock}}</td>
-            </tr>
-        {{/each}}
-    </table>
+<div class="productInfo">
+    <h3>{{this.title}}</h3>
+    <h5>{{this.description}}</h5>
+    <p>Price: {{this.price}}</p>
+    <p>Category: {{this.category}}</p>
+    <p>Stock: {{this.stock}}</p>
+    <button id="deleteProductById" name="Delete product" value={{this.id}}>Delete product</button><br><br>
+    <a href="/api/products/">Volver</a>
 </div>
+<script src="/js/client.js"></script>

@@ -2,8 +2,11 @@ const socket = io()
 const buttonSubmit = document.getElementById('newProduct')
 const buttonDelete = document.getElementById('deleteProduct')
 const buttonDeleteById = document.getElementById('deleteById')
+const buttonDeleteProductById = document.getElementById('deleteProductById')
 const buttonAddToCart = document.getElementById('addToCart')
 const id = document.getElementById('idProduct')
+
+console.log('estoy leyendo este archivo')
 
 buttonSubmit.addEventListener('click', evt => {
     socket.emit('newProduct', 'showProducts')
@@ -16,6 +19,12 @@ buttonDelete.addEventListener('click', evt => {
 buttonDeleteById.addEventListener('click', evt => {
     console.log('about to delete')
     socket.emit('deleteProductById', evt.target.id);
+})
+
+buttonDeleteProductById.addEventListener('click', evt => {
+    console.log(`por borrar ${evt.target.value}`)
+    
+    socket.emit('deleteProductById', evt.target.value);
 })
 
 buttonAddToCart.addEventListener('click', evt => {

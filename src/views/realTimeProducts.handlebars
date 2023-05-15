@@ -46,7 +46,7 @@
     <br>
     <div class="deleteById">
         <label style="font-size:20px;font-weight:bold;" for="">Delete product by Id</label>
-        <form action="/api/products/realtimeproducts" method="delete">
+        <form action="/api/products" method="delete">
             Id: <input type="text" id="idProduct">
             <input type="submit" id="deleteProduct" value="Delete this product">
         </form>
@@ -77,13 +77,6 @@
     {{/each}}
 </div>
 <div class="pageNumber">
-    {{!-- {{#if results.hasPrevPage}}
-        <a href="{{results.previousLink}}"><<</a>
-    {{/if}}
-    <label for="">{{ results.page }}</label>
-    {{#if results.hasNextPage }}
-        <a href="{{results.nextLink}}">>></a>
-    {{/if}} --}}
     <nav aria-label="Page navigation example">
         <ul class="pagination">
             <li class="page-item {{#if results.hasPrevPage}}{{else}}disabled{{/if}}">
