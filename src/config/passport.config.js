@@ -10,6 +10,7 @@ import { JWT_PRIVATE_KEY, JWT_COOKIE_NAME } from './credentials.js'
 import CustomError from "../services/errors/custom_error.js";
 import EError from '../services/errors/enums.js';
 import { generateErrorInfo } from '../services/errors/info.js';
+import logger from "../logger.js";
 
 const LocalStrategy = local.Strategy
 const JWTStrategy = passport_jwt.Strategy
@@ -22,9 +23,9 @@ const initializePassport = () => {
         usernameField: 'email'
     }, async (req, username, password, done) => {
         const { first_name, last_name, email, age } = req.body
-        
         //try{
             const user = await UserModel.findOne({ email: username })
+            
             if (user){
                 console.log('User is already registered')
                 const error = CustomError.createError({
@@ -46,8 +47,8 @@ const initializePassport = () => {
                 password: createHash(password),
                 role: 'user'
             }
-
-            if ((!first_name) || (!last_name) || (!email) || (!age) || (typeof(age) != 'number')){
+            
+            if ((!first_name) || (!last_name) || (!email) || (!age) || (!parseInt(age) > 0) || (!password)){
                 const error = CustomError.createError({
                     name: 'User creation error',
                     cause: generateErrorInfo(newUser),
@@ -59,8 +60,8 @@ const initializePassport = () => {
                 return done(error, false)
             }
 
-            const result = await UserModel.create(newUser)
             
+            const result = await UserModel.create(newUser)
             //Send confirmation email
             let textMessage = {
                 subject: `¡Bienvenido, ${newUser.first_name}`,
@@ -83,7 +84,7 @@ const initializePassport = () => {
         try{
             const user = await UserModel.findOne({ email: username })
             if (!user) {
-                console.log('User doesnt exist')
+                logger.warn('Wrong credentials. User not found on Database')
                 return done(null, user)
             }
             if (!isValidPassword(user, password)) return done(null, false)

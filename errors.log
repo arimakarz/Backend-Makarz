@@ -1,0 +1,4 @@
+[34minfo[39m: Database connected {"timestamp":"2023-05-24T01:44:36.705Z"}
+[34minfo[39m: Listening on port 8080 {"timestamp":"2023-05-24T01:44:36.708Z"}
+[31merror[39m: Inexistent route. Can't find /sessions/failLogins on the server {"timestamp":"2023-05-24T01:45:27.957Z"}
+[33mwarn[39m: Wrong credentials. User not found on Database {"timestamp":"2023-05-24T01:45:36.721Z"}

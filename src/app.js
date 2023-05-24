@@ -19,6 +19,7 @@ import { generateProduct } from './mocking.js';
 import errorHandler from './middlewares/error.js'
 import CustomError from './services/errors/custom_error.js';
 import EError from './services/errors/enums.js';
+import logger from './logger.js'
 
 const app = express();
 const httpServer = app.listen(3000, () => { console.log('Server connected!')})
@@ -34,6 +35,7 @@ app.use(cookieParser(config.app.cookie_sign))
 app.use(express.json());
 app.use(express.urlencoded({extended: true}))
 
+const PORT = config.app.port
 
 //DB Connection
 const uri = config.app.uri
@@ -77,6 +79,38 @@ app.get('/mockingproducts', (req, res) => {
     res.render('mocking', results)
 })
 
+app.get('/loggerTest', (req, res) => {
+    res.render('loggerTest')
+})
+
+app.get('/loggerTest/:type', (req, res) => {
+    const { type } = req.params
+    switch (type) {
+        case "debug":
+            logger.debug('Debug logger test')
+            break;
+        case "http":
+            logger.http('HTTP logger test')
+            break;
+        case "info":
+            logger.info('Info logger test')
+            break;
+        case "warning":
+            logger.warn('Warning logger test')
+            break;
+        case "error":
+            logger.error('Error logger test')
+            break;
+        case "fatal":
+            logger.error('Fatal logger test')
+            break;
+        default:
+            logger.error('Fatal logger test')
+            break;
+    }
+    res.render('loggerTest')
+})
+
 app.all('*', (req, res, next) => {
     const error = CustomError.createError({
         name: 'Route error',
@@ -87,6 +121,7 @@ app.all('*', (req, res, next) => {
     })
     error.statusCode = 404
     if (req.session.user) error.backTo = '/api/products'
+    logger.error(`Inexistent route. ${error.message}`)
     next(error)
 })
 
@@ -96,13 +131,14 @@ mongoose.connect(uri, {
     dbName: dbName
 }, error => {
     if (error){
-        console.log('No se pudo conectar con la base de datos')
+        logger.error('error', 'No se pudo conectar con la base de datos')
         return
     }
-    console.log('Database connected')
+    logger.log('info', 'Database connected')
 
-    const server = app.listen(8080, () => console.log('Server up!'))
-    server.on('error', e => console.log(e)) 
+    const server = app.listen(PORT, () => logger.log('info', `Listening on port ${PORT}`))
+    
+    server.on('error', e => logger.error('error', e)) 
 })
 
 let messages = []

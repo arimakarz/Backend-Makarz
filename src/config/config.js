@@ -8,7 +8,8 @@ export default {
         uri: process.env.MONGO_URL,
         dbName: process.env.DB_NAME,
         cookie_sign: process.env.COOKIE_SIGN,
-        mail_sender: process.env.MAIL_SENDER
+        mail_sender: process.env.MAIL_SENDER,
+        port: process.env.PORT
     },
     admin:{
         mail: process.env.ADMIN_NAME,

@@ -4,6 +4,7 @@ import cartsManager from "../dao/CartsManager.js"
 import CustomError from "../services/errors/custom_error.js";
 import EError from '../services/errors/enums.js';
 import { generateErrorInfo } from '../services/errors/info.js';
+import logger from '../logger.js'
 
 export async function loginForm (req, res){
     res.render('sessions/login')
@@ -26,7 +27,6 @@ export async function login(req, res){
 }
 
 export async function loginFail(req, res){
-    console.log(res)
     const error = CustomError.createError({
         name: 'User creation error',
         cause: 'Wrong credentials',
@@ -61,6 +61,7 @@ export async function registerFail(req, res){
     })
     error.statusCode = 400
     error.registerButton = true
+    logger.warn('Cannot register user. Missing types')
     res.render('errors/base', { error })
 }
 

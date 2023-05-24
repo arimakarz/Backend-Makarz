@@ -1,6 +1,7 @@
 import nodemailer from 'nodemailer'
 import config from './config/config.js'
 import Twilio from 'twilio'
+import logger from './logger.js'
 
 export const sendMail = (user, textMessage) => {
     let configMail = {
@@ -20,7 +21,7 @@ export const sendMail = (user, textMessage) => {
     transporter.sendMail(message)
         .then(() => {
             //return res.status(201).json({ msg: 'Recibiste un correo' })
-            console.log('Mensaje enviado')
+            logger.log('info', 'Registro de usuario existoso')
         })
         .catch(error => {return res.status(500).json({ error })})
 }
