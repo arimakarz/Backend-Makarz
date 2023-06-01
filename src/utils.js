@@ -7,6 +7,8 @@ import { Strategy } from 'passport-github2'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 import { JWT_PRIVATE_KEY, JWT_COOKIE_NAME } from './config/credentials.js'
+import EError from './services/errors/enums.js';
+import CustomError from "./services/errors/custom_error.js";
 
 export default __dirname
 
@@ -18,17 +20,39 @@ export const isValidPassword = (user, password) => {
     return bcrypt.compareSync(password, user.password)
 }
 
-export const generateToken = user => {
-    const token = jwt.sign({ user }, JWT_PRIVATE_KEY, { expiresIn: '24h' })
+export const generateToken = (user, expiringTime) => {
+    const token = jwt.sign({ user }, JWT_PRIVATE_KEY, { expiresIn: expiringTime })
     return token
 }
 
 export const authToken = (req, res, next) => {
     let token = req.headers.auth
-    if (!token) token = res.cookies[JWT_COOKIE_NAME]
-    if (!token) res.status(401).send({ error: 'Not auth' })
+    if (!token) token = req.cookies[JWT_COOKIE_NAME]
+    console.log(token)
+    //if (!token) res.status(401).send({ error: 'User not authenticated' })
+    if (!token){
+        const error = CustomError.createError({
+            name: 'Unauthenticated',
+            cause: "User credentials error",
+            message: 'User not authenticated. Please login',
+            code: EError.UNAUTHORIZATION_ERROR,
+            backRoute: '/sessions/login'
+        })
+        error.statusCode = 401
+        res.render('errors/base', { error })
+    }   
     jwt.verify(token, JWT_PRIVATE_KEY, (error, credentials) => {
-        if (error) res.status(403).send({ error: 'Not authorized' })
+        if (error){
+            const error = CustomError.createError({
+                name: 'Unauthorized',
+                cause: "User premissions error",
+                message: 'User not authorizated.',
+                code: EError.UNAUTHORIZATION_ERROR,
+                backRoute: '/sessions/login'
+            })
+            error.statusCode = 401
+            res.render('errors/base', { error })
+        } //res.status(403).send({ error: 'User not authorized' })
         else req.user = credentials.user
         next()
     })

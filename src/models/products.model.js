@@ -6,7 +6,7 @@ const collectionName = 'products'
 
 //const productSchema = new mongoose.Schema({
 const schema = new mongoose.Schema({
-    id: String,
+    //id: String,
     title: String,
     description: String,
     price: Number,
@@ -20,7 +20,12 @@ const schema = new mongoose.Schema({
         default: []
     },
     code: String,
-    stock: Number
+    stock: Number,
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "users",
+        default: "6425d5d0a88fef02915280d7"
+    }
 })
 
 //productSchema.plugin(mongoosePaginate)

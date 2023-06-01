@@ -2,7 +2,6 @@ document.getElementById('login').onclick = async (e) => {
     const email = document.getElementById('email').value
     const password = document.getElementById('password').value
     const body = { email, password }
-    console.log(body)
     const result = await fetch('/sessions/login', {
         method: 'POST',
         body: JSON.stringify(body),
@@ -11,7 +10,6 @@ document.getElementById('login').onclick = async (e) => {
         }
     })
     const response = await result.json()
-    console.log(response)
 }
 
 // document.getElementById('service').onclick = async (e) => {
@@ -20,6 +18,7 @@ document.getElementById('login').onclick = async (e) => {
 //             method: 'GET',
 //             headers: {
 //                 'Content-Type': 'application/json'
+//                 'Authorization': 'Bearer ${localStorage.getItem('authToken')}'
 //             }
 //         })
 //         const response = await result.json()

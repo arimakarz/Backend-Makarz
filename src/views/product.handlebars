@@ -4,7 +4,9 @@
     <p>Price: {{this.price}}</p>
     <p>Category: {{this.category}}</p>
     <p>Stock: {{this.stock}}</p>
-    <button id="deleteProductById" name="Delete product" value={{this.id}}>Delete product</button><br><br>
+    {{#if this.isOwner}}
+        <button id="deleteProductById" name="Delete product" value={{this._id}}>Delete product</button><br><br>
+    {{/if}}
     <a href="/api/products/">Volver</a>
 </div>
 <script src="/js/client.js"></script>

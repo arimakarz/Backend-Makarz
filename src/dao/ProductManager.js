@@ -5,6 +5,7 @@ import {ObjectId} from 'mongodb'
 import CustomError from '../services/errors/custom_error.js';
 import EError from '../services/errors/enums.js';
 import { generateErrorNewProduct } from "../services/errors/info.js";
+import logger from '../logger.js';
 
 class ProductManager{
     constructor(path){
@@ -14,12 +15,6 @@ class ProductManager{
     }
 
     getProducts = async (page, limit, sort, filter) => {
-        //const productsDB = await productModel.find().lean().exec()
-        page = page || 1
-        limit = limit || 10
-        sort = sort || 0
-        filter = filter || ''
-
         const productsDB = await this.model.paginate(
             filter, 
             {
@@ -43,30 +38,30 @@ class ProductManager{
         // return product
     }
 
-    addProducts = async ({title, description, price, category, status, thumbnails, code, stock}) => {
+    addProducts = async ({title, description, price, category, status, thumbnails, code, stock, owner}) => {
         await this.getProducts();
         if (!title || !description || !price || !category || !code || !stock){
-            console.error(`No se puede agregar el producto ${title}. Faltan datos.`);
+            logger.error(`No se puede agregar el producto ${title}. Faltan datos.`);
             return ({ status: "error", message: `Product can't be added. Information is missing.` });
         }else{
-            if ((typeof(price) === 'number') && (typeof(stock) === 'number')){
+            if ((parseInt(price) > 0) && (parseInt(stock) > 0)){
                 const existingCode = await this.model.findOne({code: code})
                 if (existingCode){
                     console.error(`No se puede agregar el producto ${title}. El código ya existe.`)
                     return ({ status: "error", message: `Product ${title} can't be added. Existing code.` })
                 }else{
                     await this.model.create({
-                        //id: 1,
                         title: title,
                         description: description,
-                        price: price,
+                        price: parseInt(price),
                         category: category,
                         status: status,
                         thumbnails: thumbnails,
                         code: code,
-                        stock: stock
+                        stock: parseInt(stock),
+                        owner: owner
                     })
-                    console.log('¡Producto agregado!');
+                    logger.info('Producto agregado')
                     return ({status: "success", message: "Product added!"});
                 }
             }else{
@@ -77,7 +72,8 @@ class ProductManager{
 
     updateProduct = async (updateProduct) => {
         console.log(updateProduct)
-        const result = await this.model.updateOne({_id: new ObjectId(updateProduct.id)}, updateProduct)
+        //const result = await this.model.updateOne({_id: new ObjectId(updateProduct.id)}, updateProduct)
+        const result = await this.model.updateOne({_id: updateProduct.id}, updateProduct)
         console.log(result)
         if (result.modifiedCount > 0) return ({ status: "sucess", message: "Product updated"})
         else return ({ status: "error", message: "Error. Cant update product."})
@@ -86,11 +82,8 @@ class ProductManager{
     deleteProduct = async (id) => {
         console.log(id)
         const deletedProduct = await this.model.deleteOne({_id: id})
-        if(deletedProduct.deletedCount == 1){
-            return ({ status: "success", message: "Product deleted."})
-        }else{
-            return ({ status: "error", message: "Cannot delete product. ID not found"})
-        }
+        if(deletedProduct.deletedCount == 1) return ({ status: "success", message: "Product deleted."})
+        return ({ status: "error", message: "Cannot delete product. ID not found"})
     }
 }
 

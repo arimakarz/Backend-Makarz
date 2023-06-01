@@ -9,6 +9,7 @@ import cookieParser from 'cookie-parser';
 import productsRouter from './router/products.router.js';
 import cartsRouter from './router/carts.router.js';
 import chatRouter from './router/chat.router.js';
+import usersRouter from './router/users.router.js'
 import sessionRouter from './router/session.router.js';
 import productManager from'./dao/ProductManager.js';
 import MessageManager from './dao/MessagesManager.js'
@@ -23,7 +24,7 @@ import logger from './logger.js'
 
 const app = express();
 const httpServer = app.listen(3000, () => { console.log('Server connected!')})
-const io = new Server(httpServer);
+const serverSocket = new Server(httpServer);
 //const productManager = new ProductManager(__dirname + '/../products.json');
 
 app.engine('handlebars', handlebars.engine()) 
@@ -67,6 +68,7 @@ app.use('/sessions/current', passportCall('current'), sessionRouter);
 app.use('/api/carts', cartsRouter);
 app.use('/sessions', sessionRouter);
 app.use('/', chatRouter);
+app.use('/users', usersRouter)
 
 app.get('/mockingproducts', (req, res) => {
     const docs = []
@@ -143,7 +145,7 @@ mongoose.connect(uri, {
 
 let messages = []
 
-io.on('connection', socket => {
+serverSocket.on('connection', socket => {
     console.log('New client connected!')
     socket.on("newProduct", data =>{
         console.log(data)
@@ -154,7 +156,7 @@ io.on('connection', socket => {
     socket.on('deleteProduct', id => {
         const result = productManager.deleteProduct(id);
         const productList = productManager.getProducts();
-        io.emit('realTimeProducts', {
+        serverSocket.emit('realTimeProducts', {
             productList,
             result
         })
@@ -163,7 +165,7 @@ io.on('connection', socket => {
     socket.on('deleteProductById', id => {
         const result = productManager.deleteProduct(id);
         const productList = productManager.getProducts();
-        io.emit('realTimeProducts', {
+        serverSocket.emit('realTimeProducts', {
             productList,
             result
         })
@@ -171,7 +173,7 @@ io.on('connection', socket => {
 
     socket.on("message", async data =>{
         messages.push(data)
-        io.emit('logs', messages)
+        serverSocket.emit('logs', messages)
         console.log(data)
         const messageManager = new MessageManager(data.user)
         await messageManager.addMessage(data.user, data.message)

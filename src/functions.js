@@ -16,12 +16,13 @@ export const sendMail = (user, textMessage) => {
         from: config.app.mail_sender,
         to: user.email,
         subject: textMessage.subject,
-        text: textMessage.text
+        text: textMessage.text,
+        html: textMessage.html
     }
     transporter.sendMail(message)
         .then(() => {
             //return res.status(201).json({ msg: 'Recibiste un correo' })
-            logger.log('info', 'Registro de usuario existoso')
+            logger.log('info', message.text)
         })
         .catch(error => {return res.status(500).json({ error })})
 }

@@ -1,0 +1,16 @@
+<h3>Reset password</h3>
+<div>
+    {{#unless status}}
+        <form action="/sessions/resetPassword" method="post">
+            <label for="">Your mail: </label>
+            <input type="text" placeholder="Insert mail" name="email">
+            <input type="submit">
+        </form>
+    {{/unless}}
+    {{#if status}}
+        <p>Email has been sent with a link to reset password. Please follow the instructions.</p>
+        <form action="/sessions/login">
+            <input type="submit" value="Back to login">
+        </form>
+    {{/if}}
+</div>

@@ -1,9 +1,9 @@
 import { Router } from 'express'
-import { login, loginForm, loginFail, logout, registerForm, registerUser, registerFail } from '../controllers/sessions.controller.js'
+import { login, loginForm, loginFail, logout, registerForm, registerUser, registerFail, resetPasswordSendMailForm, resetPasswordSendMail, resetForm, resetPassword } from '../controllers/sessions.controller.js'
 import passport from "passport";
 import { JWT_COOKIE_NAME } from '../config/credentials.js'
 //import cartsManager from '../dao/CartsManager.js';
-//import { createHash, isValidPassword } from "../utils.js";
+import { authToken } from "../utils.js";
 
 const router = Router()
 //const cartsManager = new CartsManager();
@@ -17,29 +17,6 @@ router.get('/failRegister', registerFail)
 
 router.get('/login', loginForm)
 
-// router.post('/login', passport.authenticate('login', { failureRedirect: '/sessions/failLogin' }), async (req, res) => {
-//     // const { email, password } = req.body
-
-//     // const user = await UserModel.findOne({ email, password }).lean().exec()
-    
-//     if (!req.user){
-//         return res.status(401).render(('errors/base'), {
-//             error: "Wrong email or password"
-//         })
-//     }
-//     let role = 'user'
-//     await cartsManager.createCart()
-//     if (req.user.email == 'admincoder@coder.com'){
-//         role = 'admin'
-//     }
-
-//     req.session.user = {
-//         email: req.user.email,
-//         role
-//     }
-
-//     res.cookie(JWT_COOKIE_NAME, req.user.token).redirect('/api/products')
-// })
 router.post('/login', passport.authenticate('login', { failureRedirect: '/sessions/failLogin' }), login)
 
 router.get('/failLogin', loginFail)
@@ -83,5 +60,13 @@ router.get('/current', (req, res) => {
         res.send({ status: 'error', error: 'Not logged in'})
     }
 })
+
+router.get('/resetPassword', resetPasswordSendMailForm)
+
+router.post('/resetPassword', resetPasswordSendMail)
+
+router.get('/reset/:userID/:token', resetForm)
+
+router.post('/reset/:userID/:token', resetPassword)
 
 export default router

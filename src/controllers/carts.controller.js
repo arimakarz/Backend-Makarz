@@ -1,4 +1,5 @@
 import cartsManager from '../dao/CartsManager.js'
+import productsManager from '../dao/ProductManager.js';
 
 export async function createCart (req, res) {
     const response = await cartsManager.createCart();
@@ -19,11 +20,16 @@ export async function getCartById(req, res){
 
 export async function addToCart (req, res){
     const { cid, pid } = req.params
-    const response = await cartsManager.addToCart(cid, pid);
-
+    const product = await productsManager.getProductById(pid)
+    let message = ""
+    if ((!product?.owner) || (product.owner.toString() != req.user._id.toString())){
+        const response = await cartsManager.addToCart(cid, pid);
+    }else {
+        message = "You can't add products you own to your cart."
+    }
     const cartUpdated = await cartsManager.getCart(cid);
     const productsArray = cartUpdated.products
-    res.render('cart', {productsArray, cid})
+    res.render('cart', {productsArray, cid, message})
 }
 
 export async function deleteProductFromCart(req, res){

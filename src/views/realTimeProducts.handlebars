@@ -12,7 +12,7 @@
     {{/unless}}
     <a href="/sessions/logout">Logout</a>
 </div>
-{{#if results.admin}}
+{{#unless results.userRole}}
     <div class="formData">
         <label style="font-size:20px;font-weight:bold;" for="">Add new product</label>
         <form action="/api/products" method="post">
@@ -44,14 +44,14 @@
         </form>
     </div>
     <br>
-    <div class="deleteById">
+    {{!-- <div class="deleteById">
         <label style="font-size:20px;font-weight:bold;" for="">Delete product by Id</label>
         <form action="/api/products" method="delete">
             Id: <input type="text" id="idProduct">
             <input type="submit" id="deleteProduct" value="Delete this product">
         </form>
-    </div>
-{{/if}}
+    </div> --}}
+{{/unless}}
 <hr>
 <div class="showProducts">
     {{#each results.docs}}
@@ -93,5 +93,6 @@
         </ul>       
     </nav>
 </div>
-<script src="/socket.io/socket.io.js"></script>
-<script src="/js/client.js"></script>
+{{!-- <script src="/socket.io/socket.io.js"></script> --}}
+<script src="https://cdn.socket.io/socket.io-1.0.0.js"></script>
+{{!-- <script src="/js/client.js"></script> --}}

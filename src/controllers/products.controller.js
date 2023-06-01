@@ -1,9 +1,11 @@
 import productManager from "../dao/ProductManager.js";
 import cartsManager from '../dao/CartsManager.js';
+import usersManager from '../dao/UsersManager.js';
 import UsersDTO from "../dto/users.js";
 import EError from '../services/errors/enums.js';
 import CustomError from "../services/errors/custom_error.js";
 import { generateErrorNewProduct } from "../services/errors/info.js";
+import logger from "../logger.js";
 
 export async function getProducts(req, res){
     let page = parseInt(req.query.page);
@@ -27,8 +29,6 @@ export async function getProducts(req, res){
     }
     
     const results = await productManager.getProducts(page, limit, sort, filter);
-    //(limit) ? productsList.splice(limit, (productsList.length - limit)) : productsList;
-    //res.json({productsList})
     results.limit = limit
     results.previousLink = results.hasPrevPage ? `/api/products?page=${results.prevPage}&limit=${limit}&sort=${sort}&query=${query}` : ''
     results.nextLink = results.hasNextPage ? `/api/products?page=${results.nextPage}&limit=${limit}&sort=${sort}&query=${query}` : ''
@@ -41,50 +41,63 @@ export async function getProducts(req, res){
         })
     }
     
-    //try{
-        //const user = await UserModel.findOne({ email: req.session.user.email})
-        const user = req.user
-        if (req.session.user){
-            results.greetingName = new UsersDTO(req.user.user).full_name
-            const cart = await cartsManager.getNewCart()
-            results.cartId = cart._id.valueOf()
-            
-            if (req.session.user.role == 'admin'){
-                results.admin = true
-            }else{
-                results.admin = false
-            }
-            res.render('realTimeProducts', {results, pagination})
-        }else{
-            const error = CustomError.createError({
-                name: 'Session expired',
-                cause: "Session expired",
-                message: 'The session has expired. Please log in again',
-                code: EError.UNAUTHORIZATION_ERROR,
-                backRoute: '/sessions/login'
-            })
-            error.statusCode = 500
-            
-            res.render('errors/base', { error })
-            //res.send('Error loading user...')
-        }
-    // }catch (error) {
-    //     res.status(401).redirect('/sessions/login')
-    // }
+    const user = req.user
+    if (user){
+        results.greetingName = new UsersDTO(req.user).full_name
+        const cart = await cartsManager.getNewCart()
+        results.cartId = cart._id.valueOf()
+        
+        if (user.role == 'admin') results.admin = true
+        else results.admin = false
+        if (user.role == 'premium') results.premium = true
+        else results.premium = false
+        if (user.role == 'user') results.userRole = true
+        else results.userRole = false
 
+        // if ((user.role == 'admin') || (user.role == 'premium')) results.admin = true
+        // else results.admin = false
+        
+        res.render('realTimeProducts', {results, pagination})
+    }else{
+        const error = CustomError.createError({
+            name: 'Session expired',
+            cause: "Session expired",
+            message: 'The session has expired. Please login again',
+            code: EError.UNAUTHORIZATION_ERROR,
+            backRoute: '/sessions/login'
+        })
+        error.statusCode = 500
+        
+        res.render('errors/base', { error })
+    }
 }
 
 export async function getProductById(req, res){
     const { pid } = req.params;
-    //try{
-        const product = await productManager.getProductById(pid);
+    try{
+        let product = await productManager.getProductById(pid);
+        if (!product.owner) product.isOwner = false
+        else if (product.owner.toString() == req.user.user._id) product.isOwner = true
+        else product.isOwner = false
+
         res.render('product', product);
-    //}catch{ res.status(400).send('Product ID not found.')}
+    }catch{ 
+        const error = CustomError.createError({
+            name: 'Product not found',
+            cause: "Invalid product ID",
+            message: 'Product not found',
+            code: EError.UNAUTHORIZATION_ERROR,
+            backRoute: '/api/products'
+        })
+        error.statusCode = 400
+        
+        res.render('errors/base', { error })
+    }
 }
 
 export async function addProduct(req, res){
     const newProduct = req.body;
-
+    newProduct.owner = req.user.user._id
     const response = await productManager.addProducts(newProduct);
     if (response.status == "success"){
         const results = await productManager.getProducts();
@@ -98,6 +111,7 @@ export async function addProduct(req, res){
             backRoute: '/api/products'
         })
         error.statusCode = 400
+        logger.error(error.message)
         
         res.render('errors/base', { error })
     }

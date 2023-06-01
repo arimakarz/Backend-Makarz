@@ -1,17 +1,16 @@
 import { Router} from 'express';
 import { getProducts, getProductById, addProduct, updateProduct, deleteProduct } from '../controllers/products.controller.js';
 import productManager from '../dao/ProductManager.js';
-import { passportCall } from '../utils.js';
+import { authToken } from '../utils.js';
 
 const router = Router();
 
-router.get('/', passportCall('current'), getProducts)
+router.get('/', authToken, getProducts)
 
 router.get('/realtimeproducts', async (req, res) => {
     const { limit } = req.query;
     const productsList = await productManager.getProducts();
     (limit) ? productsList.splice(limit, (productsList.length - limit)) : productsList;
-    //res.json({productsList})
     res.render('realTimeProducts', productsList)
 });
 
@@ -21,7 +20,8 @@ router.post('/', addProduct)
 
 router.put('/:pid', updateProduct)
 
-router.delete('/:pid', deleteProduct)
+//router.delete('/:pid', deleteProduct)
+router.delete('/:pid', (req, res) => console.log('llegue') )
 
 router.post('/realtimeproducts', async (req, res) => {
     const newProduct = req.body;

@@ -89,10 +89,8 @@ const initializePassport = () => {
             }
             if (!isValidPassword(user, password)) return done(null, false)
             
-            //req.session.user = user
-
             //Creating token
-            const token = generateToken(user)
+            const token = generateToken(user, '24h')
             user.token = token
 
             return done(null, user)
@@ -121,6 +119,9 @@ const initializePassport = () => {
                     role: 'user',
                     cartId: newCart._id
                 })
+                const token = generateToken(user, '24h')
+                newUser.token = token
+
                 return done(null, newUser)
             }
         }catch(error){

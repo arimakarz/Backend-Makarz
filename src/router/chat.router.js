@@ -1,13 +1,13 @@
 import express from 'express'
 import passport from 'passport'
-import { passportCall } from '../utils.js'
+import { authToken, passportCall } from '../utils.js'
 import EError from '../services/errors/enums.js'
 import CustomError from '../services/errors/custom_error.js'
 
 const router = express.Router()
 
 router.get('/chat', passportCall('current'), (req, res) => {
-    if (req.user.user.role == 'user') res.render('chat', {})
+    if (req.user.user.role != 'admin') res.render('chat')
     else {
         const error = CustomError.createError({
             name: 'Not authorized for using the chat',
@@ -16,11 +16,14 @@ router.get('/chat', passportCall('current'), (req, res) => {
             code: EError.UNAUTHORIZATION_ERROR,
             backRoute: '/api/products'
         })
-        console.log(error)
         error.statusCode = 401
         
         res.render('errors/base', { error })
     }
+})
+
+router.get('/chat2', authToken, (req, res) => {
+    res.render('chat')
 })
 
 export default router
