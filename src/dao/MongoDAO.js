@@ -6,8 +6,8 @@ export default class MongoDAO {
     constructor(uri, dbName){
         this.mongoose = mongoose.connect(uri, {dbName})
         this.models = {
-            [Product.collectionName]: mongoose.model(Product.collectionName, Product.schema),
-            [Cart.collectionName]: mongoose.model(Cart.collectionName, Cart.schema)
+            [Product]: mongoose.model(Product.collectionName, Product.schema),
+            [Cart]: mongoose.model(Cart.collectionName, Cart.schema)
         }
     }
 
@@ -19,9 +19,10 @@ export default class MongoDAO {
 
     getById = async(options, entity) => {
         console.log(this.models)
+        console.log(entity)
         if (!this.models[entity]) return {error: 'Entity not found in models'}
         let results = await this.models[entity].findOne(options)
-        console.log(results)
+        //console.log(results)
         return results
     }
 }

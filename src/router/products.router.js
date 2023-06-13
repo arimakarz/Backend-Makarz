@@ -20,8 +20,8 @@ router.post('/', addProduct)
 
 router.put('/:pid', updateProduct)
 
-//router.delete('/:pid', deleteProduct)
-router.delete('/:pid', (req, res) => console.log('llegue') )
+router.delete('/:pid', deleteProduct)
+//router.delete('/:pid', (req, res) => console.log('llegue') )
 
 router.post('/realtimeproducts', async (req, res) => {
     const newProduct = req.body;

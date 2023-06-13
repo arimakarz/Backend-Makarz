@@ -1,0 +1,156 @@
+paths:
+  /api/products:
+    get:
+      summary: Obtiene todos los productos
+      tags:
+        - Products
+      responses:
+        "200":
+          description: Los productos fueron obtenidos satisfactoriamente de la base de datos
+          content:
+            aplication/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#components/schemas/Product'
+        "500":
+          description: Error interno del servidor, usualmente generado por una query defectuosa
+    post:
+      summary: Crea un nuevo producto
+      tags:
+        - Products
+      parameters:
+        - name: title
+          in: body
+          required: true
+          description: Nombre del producto que se desea crear
+          schema:
+            $type: String
+        - name: description
+          in: body
+          required: true
+          description: Descripción del producto
+          schema:
+            $type: String
+        - name: price
+          in: body
+          required: true
+          description: Precio del producto
+          schema:
+            $type: Number
+        - name: category
+          in: body
+          required: true
+          description: Categoría del producto
+          schema:
+            $type: String
+        - name: status
+          in: body
+          required: true
+          description: Status de disponibilidad del producto
+          schema:
+            $type: Boolean
+        - name: code
+          in: body
+          required: true
+          description: Código interno del producto
+          schema:
+            $type: Number    
+        - name: stock
+          in: body
+          required: true
+          description: Cantidad disponible del producto
+          schema:
+            $type: Number
+        - name: owner
+          in: body
+          required: false
+          description: Propietario del producto
+          schema:
+            $type: object
+      responses:
+        "200":
+          description: El producto fue creado existosamente.
+        "400":
+          description: No se pudo crear el producto.
+
+  /api/products/{pid}:
+    get:
+      summary: Obtiene un solo producto a partir de su ID
+      tags:
+        - Products
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID del producto que se desea solicitar
+          schema:
+            $type: String
+      responses:
+        "200":
+          description: Producto encontrado
+          content:
+            aplication/json:
+              schema:
+                $ref: "#components/schemas/Product"
+        "400":
+          description: Producto no encontrado
+    delete:
+      summary: Elimina un producto a partir de su ID
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: ID del producto que se desea eliminar
+          schema:
+            $type: String
+      responses:
+        "200":
+          description: Producto eliminado
+        "400":
+          description: Producto no encontrado
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        _id: 
+          type: ObjectId
+          description: Id autogenerado de mongo
+        title:
+          type: String
+          description: Nombre del producto
+        description:
+          type: String
+          description: Descripción del producto
+        price:
+          type: Number
+          description: Precio del producto
+        category:
+          type: String
+          description: Categoría del producto
+        status:
+          type: Boolean
+          description: Producto disponible
+        code:
+          type: String
+          description: Código interno del producto
+        stock:
+          type: Number
+          description: Cantidad disponible del producto
+        owner:
+          type: ID del usuario propietario del producto
+          description: Propietario
+      example:
+        _id: ObjectId("abc123")
+        title: Computadora
+        description: Computadora Lenovo
+        price: 250000
+        category: Electrónica
+        status: true
+        code: "ELEC01"
+        stock: 10
+        owner: ObjectId("own123")

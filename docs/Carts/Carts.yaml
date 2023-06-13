@@ -1,0 +1,192 @@
+paths:
+  /api/carts:
+    post:
+      summary: Crea un nuevo carrito
+      tags:
+        - Carts
+      responses:
+        "200":
+          description: El carrito fue creado existosamente
+        "500":
+          description: Error interno del servidor, usualmente generado por una query defectuosa
+
+  /api/carts/{cid}:
+    get:
+      summary: Obtiene un solo carrito a partir de su ID
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: ID del carrito que se desea solicitar
+          schema:
+            $type: String
+      responses:
+        "200":
+          description: Carrito encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/Cart"
+        "400":
+          description: Carrito no encontrado
+    delete:
+      summary: Elimina el carrito a partir de su ID
+      tags:
+        - Carts
+      parameters:
+        - name: uid
+          in: path
+          required: true
+          description: ID del carrito que se desea eliminar
+          schema:
+            $type: String
+      responses:
+        "200":
+          description: Carrito eliminado
+          content:
+            aplication/json:
+              schema:
+                $ref: "#components/schemas/Cart"
+        "400":
+          description: Carrito no encontrado
+          
+  /api/carts/{cid}/products/{pid}:
+    post:
+      summary: Añade el producto con ID 'pid' al carrito con ID 'cid'
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: ID del carrito que se desea modificar
+          schema:
+            $type: String
+        - name: pid
+          in: path
+          required: true
+          description: ID del producto que se va a agregar al carrito
+          schema: 
+            $type: String
+      responses:
+        "200":
+          description: Producto agregado existosamente
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/Cart"
+        "400":
+          description: No se pudo agregar el producto al carrito.
+    delete:
+      summary: Elimina el producto con ID 'pid' del carrito con ID 'cid'
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: ID del carrito que se desea modificar
+          schema:
+            $type: String
+        - name: pid
+          in: path
+          required: true
+          description: ID del producto que se va a eliminar del carrito
+          schema: 
+            $type: String
+      responses:
+        "200":
+          description: Producto eliminado existosamente
+          content:
+            aplication/json:
+              schema:
+                $ref: "#components/schemas/Cart"
+        "400":
+          description: No se pudo eliminar el producto del carrito.
+    put:
+      summary: Actualiza la cantidad del producto con ID 'pid' en el carrito con ID 'cid'
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: ID del carrito que se desea modificar
+          schema:
+            $type: String
+        - name: pid
+          in: path
+          required: true
+          description: ID del producto que se va a modificar su cantidad
+          schema: 
+            $type: String
+      responses:
+        "200":
+          description: Producto actualizado existosamente
+          content:
+            aplication/json:
+              schema:
+                $ref: "#components/schemas/Cart"
+        "400":
+          description: No se pudo actualizar la cantidad del producto.
+
+  /api/carts/{cid}/purchase:
+    post:
+      summary: Confirma la compra del carrito con el ID proporcionado
+      tags:
+        - Carts
+      responses:
+        "200":
+          description: El ticket fue creado existosamente
+        "500":
+          description: Error interno del servidor, usualmente generado por una query defectuosa
+
+components:
+  schemas:
+    Cart:
+      type: object
+      properties:
+        _id: 
+          type: ObjectId
+          description: Id autogenerado de mongo
+        products:
+          type: Array
+          description: Listado de productos contenidos en el carrito
+          items: 
+            type: object
+            properties:
+              product:
+                $ref: '../Products/Products.yaml#/components/schemas/Product'
+              quantity:
+                type: Number
+                description: Cantidad del producto en carrito
+      example:
+        _id: ObjectId("cart123")
+        products: [
+          {
+            product: { 
+              id: abc123,
+              title: Producto 1,
+              description: Descripción del producto 1,
+              price: 100,
+              category: Electronic,
+              status: true,
+              stock: 10
+            },
+            quantity: 1
+          },
+          {
+            product: { 
+              id: xyz789,
+              title: Producto 2,
+              description: Descripción del producto 2,
+              price: 200,
+              category: Books,
+              status: true,
+              stock: 20
+            },
+            quantity: 2
+          }
+        ]

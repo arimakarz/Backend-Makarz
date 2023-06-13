@@ -4,6 +4,7 @@ import { Server } from 'socket.io';
 import mongoose from 'mongoose';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
+import cors from 'cors'
 import passport from 'passport';
 import cookieParser from 'cookie-parser';
 import productsRouter from './router/products.router.js';
@@ -21,6 +22,8 @@ import errorHandler from './middlewares/error.js'
 import CustomError from './services/errors/custom_error.js';
 import EError from './services/errors/enums.js';
 import logger from './logger.js'
+import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerUiExpress from 'swagger-ui-express'
 
 const app = express();
 const httpServer = app.listen(3000, () => { console.log('Server connected!')})
@@ -35,6 +38,7 @@ app.use('/chat', express.static(__dirname + '/../public'))
 app.use(cookieParser(config.app.cookie_sign))
 app.use(express.json());
 app.use(express.urlencoded({extended: true}))
+//app.use(cors)
 
 const PORT = config.app.port
 
@@ -70,6 +74,22 @@ app.use('/sessions', sessionRouter);
 app.use('/', chatRouter);
 app.use('/users', usersRouter)
 
+//Swagger configuration
+const swaggerOptions = {
+    definition: {
+        openapi: '3.0.1',
+        info: {
+            title: 'Documentación de API Proyecto Backend',
+            description: 'API desarrollada como proyecto del curso de Backend'
+        }
+    },
+    apis: [`./docs/**/*.yaml`]
+}
+
+const specs = swaggerJSDoc(swaggerOptions)
+app.use('/apidocs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs))
+
+//Testing routes
 app.get('/mockingproducts', (req, res) => {
     const docs = []
     for (let index = 0; index < 100; index++){
@@ -129,6 +149,8 @@ app.all('*', (req, res, next) => {
 
 app.use(errorHandler)
 
+let server = ""
+
 mongoose.connect(uri, {
     dbName: dbName
 }, error => {
@@ -138,7 +160,7 @@ mongoose.connect(uri, {
     }
     logger.log('info', 'Database connected')
 
-    const server = app.listen(PORT, () => logger.log('info', `Listening on port ${PORT}`))
+    server = app.listen(PORT, () => logger.log('info', `Listening on port ${PORT}`))
     
     server.on('error', e => logger.error('error', e)) 
 })
@@ -153,6 +175,16 @@ serverSocket.on('connection', socket => {
         //io.emit('realTimeProducts', productsList)
     })
 
+    socket.on("message", async data =>{
+        messages.push(data)
+        serverSocket.emit('logs', messages)
+        const messageManager = new MessageManager(data.user)
+        await messageManager.addMessage(data.user, data.message)
+    })
+})
+
+const appSocket = new Server(server);
+appSocket.on('connection', socket => {
     socket.on('deleteProduct', id => {
         const result = productManager.deleteProduct(id);
         const productList = productManager.getProducts();
@@ -170,13 +202,4 @@ serverSocket.on('connection', socket => {
             result
         })
     })
-
-    socket.on("message", async data =>{
-        messages.push(data)
-        serverSocket.emit('logs', messages)
-        console.log(data)
-        const messageManager = new MessageManager(data.user)
-        await messageManager.addMessage(data.user, data.message)
-    })
 })
-
