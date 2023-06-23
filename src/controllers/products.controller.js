@@ -56,7 +56,8 @@ export async function getProducts(req, res){
 
         // if ((user.role == 'admin') || (user.role == 'premium')) results.admin = true
         // else results.admin = false
-        
+
+        console.log(results)
         res.render('realTimeProducts', {results, pagination})
     }else{
         const error = CustomError.createError({

@@ -32,10 +32,10 @@ class ProductManager{
     }
 
     getProductById = async (id) => {
-        const product = await this.model.findOne({_id: id})
-        return product;
-        // let product = await productService.getById({_id: id})
-        // return product
+        // const product = await this.model.findOne({_id: id})
+        // return product;
+        let product = await productService.getById({_id: id})
+        return product
     }
 
     addProducts = async ({title, description, price, category, status, thumbnails, code, stock, owner}) => {

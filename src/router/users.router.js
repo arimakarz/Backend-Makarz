@@ -1,7 +1,9 @@
 import { Router } from 'express'
-import { setRole } from '../controllers/users.controller.js'
+import { getAll, setRole } from '../controllers/users.controller.js'
 
 const router = Router()
+
+router.get('/', getAll) 
 
 router.get('/premium/:uid', setRole) 
 

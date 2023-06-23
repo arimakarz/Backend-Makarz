@@ -8,7 +8,7 @@ export default class Repository {
     get = async(params) => {
         return this.dao.get(params, this.model)
     }
-
+    
     getById = async(params) => {
         return this.dao.getById(params, this.model, this.collectionName)
     }

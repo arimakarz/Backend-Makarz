@@ -3,6 +3,7 @@ import local from 'passport-local'
 import passport_jwt from 'passport-jwt'
 import GitHubStrategy from 'passport-github2'
 import UserModel from "../models/user.model.js";
+import usersManager from "../dao/UsersManager.js";
 import cartsManager from "../dao/CartsManager.js";
 import { createHash, isValidPassword, generateToken, authToken, extractCookie } from "../utils.js";
 import { sendMail, sendSMS } from '../functions.js'
@@ -82,7 +83,8 @@ const initializePassport = () => {
         usernameField: 'email'
     }, async(username, password, done) => {
         try{
-            const user = await UserModel.findOne({ email: username })
+            //const user = await UserModel.findOne({ email: username })
+            const user = await usersManager.getByEmail( username )
             if (!user) {
                 logger.warn('Wrong credentials. User not found on Database')
                 return done(null, user)
@@ -92,7 +94,7 @@ const initializePassport = () => {
             //Creating token
             const token = generateToken(user, '24h')
             user.token = token
-
+            
             return done(null, user)
         }catch (err) {
             return ({ status: 'error', error: err})
@@ -145,7 +147,7 @@ const initializePassport = () => {
     })
 
     passport.deserializeUser(async (id, done) => {
-        const user = await UserModel.findById(id)
+        const user = await usersManager.getById(id)
         done(null, user)
     })
 

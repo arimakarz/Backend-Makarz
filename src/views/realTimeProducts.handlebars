@@ -10,6 +10,9 @@
         <a href="/api/carts/{{results.cartId}}">See my cart</a>
         <a href="/chat">Chat</a>
     {{/unless}}
+    {{#if results.admin}}
+        <a href="/users">Users</a>
+    {{/if}}
     <a href="/sessions/logout">Logout</a>
 </div>
 {{#unless results.userRole}}

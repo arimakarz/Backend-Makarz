@@ -1,0 +1,21 @@
+<a href="/api/products/">Volver</a>
+<h2>Users list</h2>
+<div>
+    <table class="table table-striped">
+        <tr>
+            <th>First name</th>
+            <th>Last name</th>
+            <th>Email</th>
+            <th>Role</th>
+        </tr>
+        {{#each users}}
+            <tr>
+                <td>{{this.first_name}}</td>
+                <td>{{this.last_name}}</td>
+                <td>{{this.email}}</td>
+                <td>{{this.role}}</td> 
+                <td><a href="/premium/{{this._id}}">Change role</a></td>
+            </tr>
+        {{/each}}
+    </table>
+</div>
