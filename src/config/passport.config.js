@@ -5,7 +5,7 @@ import GitHubStrategy from 'passport-github2'
 import UserModel from "../models/user.model.js";
 import usersManager from "../dao/UsersManager.js";
 import cartsManager from "../dao/CartsManager.js";
-import { createHash, isValidPassword, generateToken, authToken, extractCookie } from "../utils.js";
+import { createHash, isValidPassword, generateToken, extractCookie } from "../utils.js";
 import { sendMail, sendSMS } from '../functions.js'
 import { JWT_PRIVATE_KEY, JWT_COOKIE_NAME } from './credentials.js'
 import CustomError from "../services/errors/custom_error.js";
@@ -107,31 +107,37 @@ const initializePassport = () => {
         clientSecret: '974805ab461e2ff707514cc698e276cb0bc18707',
         callbackURL: 'http://localhost:8080/sessions/githubcallback'
     }, async(accessToken, refreshToken, profile, done) => {
-        //try{
-            const email = profile._json.email
-            const user = await usersManager.getByEmail(email)
+        try{
+            const resultCart = await cartsManager.createCart()
+            const newCart = await cartsManager.getNewCart()
+
+            const user = await usersManager.getByEmail(profile._json.email)
             if (user) {
                 return done(null, user)
             }else{
-                const resultCart = await cartsManager.createCart()
-                const newCart = await cartsManager.getNewCart()
                 const newUser = {
                     first_name: profile._json.name,
                     last_name: profile._json.last_name,
                     email: profile._json.email,
-                    //email: "arimakarz@gmail.com",
                     role: 'user',
                     cartId: newCart._id
                 }
                 const result = await usersManager.save(newUser)
-                const token = generateToken(user, '24h')
-                newUser.token = token
-
-                return done(null, newUser)
+                const user = await usersManager.getByEmail(newUser.email)
+                
+                return done(null, user)
             }
-        // }catch(error){
-        //     return done(`Error to login with github. Error: ${error}`)
-        // }
+        }catch(error){
+            error = CustomError.createError({
+                name: 'User creation error',
+                cause: generateErrorInfo(newUser),
+                message: 'Error trying to create a user',
+                code: EError.INVALID_TYPES_ERROR
+            })
+            error.statusCode = 400
+            error.registerButton = true
+            return done(error, false)
+        }
     }))
 
     passport.use('current', new JWTStrategy({
@@ -141,6 +147,14 @@ const initializePassport = () => {
         try {
             return done(null, jwt_payload)
         }catch (error) {
+            error = CustomError.createError({
+                name: 'User not authorized',
+                cause: generateErrorInfo(newUser),
+                message: 'Unauthorized user',
+                code: EError.INVALID_TYPES_ERROR
+            })
+            error.statusCode = 403
+            error.registerButton = true
             return done(error)
         }
     }))

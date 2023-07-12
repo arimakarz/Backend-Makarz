@@ -28,6 +28,7 @@ export const generateToken = (user, expiringTime) => {
 export const authToken = (req, res, next) => {
     let token = req.headers.auth
     if (!token) token = req.cookies[JWT_COOKIE_NAME]
+    console.log(token)
     if (!token){
         const error = CustomError.createError({
             name: 'Unauthenticated',
@@ -48,9 +49,9 @@ export const authToken = (req, res, next) => {
                 code: EError.UNAUTHORIZATION_ERROR,
                 backRoute: '/sessions/login'
             })
-            error.statusCode = 401
+            error.statusCode = 403
             res.render('errors/base', { error })
-        } //res.status(403).send({ error: 'User not authorized' })
+        } 
         else req.user = credentials.user
         next()
     })

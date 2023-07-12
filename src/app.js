@@ -68,7 +68,8 @@ initializePassport()
 app.use(passport.initialize())
 app.use(passport.session())
 
-app.use('/api/products', passportCall('current'), productsRouter);
+//app.use('/api/products', passportCall('current'), productsRouter);
+app.use('/api/products', productsRouter);
 app.use('/sessions/current', passportCall('current'), sessionRouter);
 app.use('/api/carts', cartsRouter);
 app.use('/sessions', sessionRouter);

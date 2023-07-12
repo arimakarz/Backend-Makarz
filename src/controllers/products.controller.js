@@ -29,7 +29,7 @@ export async function getProducts(req, res){
     }else{
         query = ""
     }
-    
+
     const results = await productManager.getProducts(page, limit, sort, filter);
     results.limit = limit
     results.previousLink = results.hasPrevPage ? `/api/products?page=${results.prevPage}&limit=${limit}&sort=${sort}&query=${query}` : ''

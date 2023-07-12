@@ -3,7 +3,7 @@ import { login, loginForm, loginFail, logout, registerForm, registerUser, regist
 import passport from "passport";
 import { JWT_COOKIE_NAME } from '../config/credentials.js'
 //import cartsManager from '../dao/CartsManager.js';
-import { authToken } from "../utils.js";
+import { generateToken } from "../utils.js";
 
 const router = Router()
 //const cartsManager = new CartsManager();
@@ -22,11 +22,15 @@ router.post('/login', passport.authenticate('login', { failureRedirect: '/sessio
 router.get('/failLogin', loginFail)
 
 router.get('/github', passport.authenticate('github', {scope: ['user: email']}), (req, res) => {
-    res.redirect('/api/products')
+    //res.redirect('/api/products')
 })
 
 router.get('/githubcallback', passport.authenticate('github', {failureRedirect: 'sessions/login'}), async(req, res)=>{
+    const token = generateToken(req.user, '24h')
+    req.user.token = token
     req.session.user = req.user
+    res.cookie(JWT_COOKIE_NAME, token)
+    console.log('bein')
     res.redirect('/api/products')
 })
 
