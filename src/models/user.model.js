@@ -13,11 +13,14 @@ const schema = new mongoose.Schema({
     cartId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'carts'
+    },
+    last_connection: {
+        type: Date, 
+        default: Date.now
     }
 })
 
 mongoose.set("strictQuery", false)
-//const UserModel = mongoose.model(userCollection, userSchema)
 //const UserModel = mongoose.model(collectionName, schema)
 
 //export default UserModel

@@ -21,7 +21,14 @@ class UsersManager{
         return user
     }
 
+    save = async(user) => {
+        const newUser = await this.model.create(user)
+        return newUser
+    }
+
     update = async(id, data) => await this.model.updateOne({ _id: id }, data)
+
+    delete = async(id) => await this.model.deleteOne({ _id: id })
 }
 
 export default new UsersManager()

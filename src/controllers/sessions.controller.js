@@ -9,6 +9,7 @@ import logger from '../logger.js'
 import { sendMail } from '../functions.js'
 import { generateToken, createHash } from '../utils.js'
 import UsersManager from '../dao/UsersManager.js';
+import { validateExpressRequest } from 'twilio/lib/webhooks/webhooks.js';
 
 export async function loginForm (req, res){
     res.render('sessions/login')
@@ -26,6 +27,9 @@ export async function login(req, res){
         email: req.user.email,
         role
     }
+
+    await UsersManager.update(req.user._id, {'$set' : { 'last_connection' : Date.now()} })
+
     res.cookie(JWT_COOKIE_NAME, req.user.token)
     res.redirect('/api/products')
 }
@@ -105,8 +109,11 @@ export async function resetPassword(req, res) {
     const { password, checkPassword } = req.body
     const userDB = await usersManager.getById(user.userID)
     if (password !== checkPassword) return res.send('Password not match')
-    if ( password == userDB.password) return res.send('New password must me different than the last one')
-    userDB.password = createHash(password)
-    await usersManager.update(userDB.id, userDB)
-    res.redirect('/sessions/login')
+    const passwordHashed = createHash(password)
+    if ( passwordHashed == userDB.password) return res.send('New password must me different than the last one')
+    else {
+        userDB.password = passwordHashed
+        await usersManager.update(userDB.id, userDB)
+        res.redirect('/sessions/login')
+    }
 }

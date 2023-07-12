@@ -15,7 +15,7 @@ class TicketsManager{
     generateTicketNumber = async () => {
         let code = 1
         const tickets = await this.model.find()
-        if (tickets){
+        if (tickets.length > 0){
             code = parseInt(tickets[tickets.length - 1].code) + 1;
         }else{
             code = 1

@@ -1,7 +1,6 @@
 import mongoose from 'mongoose'
 import productModel from '../models/products.model.js';
 import {productService} from '../services/service.js';
-import {ObjectId} from 'mongodb'
 import CustomError from '../services/errors/custom_error.js';
 import EError from '../services/errors/enums.js';
 import { generateErrorNewProduct } from "../services/errors/info.js";
@@ -15,6 +14,11 @@ class ProductManager{
     }
 
     getProducts = async (page, limit, sort, filter) => {
+        if (!page) page = 1
+        if (!limit) limit = 10
+        if (!sort) sort = 0
+        if (!filter) filter = {}
+
         const productsDB = await this.model.paginate(
             filter, 
             {
@@ -32,10 +36,10 @@ class ProductManager{
     }
 
     getProductById = async (id) => {
-        // const product = await this.model.findOne({_id: id})
-        // return product;
-        let product = await productService.getById({_id: id})
-        return product
+        const product = await this.model.findOne({_id: id})
+        return product;
+        // let product = await productService.getById({_id: id})
+        // return product
     }
 
     addProducts = async ({title, description, price, category, status, thumbnails, code, stock, owner}) => {
@@ -71,16 +75,13 @@ class ProductManager{
     }
 
     updateProduct = async (updateProduct) => {
-        console.log(updateProduct)
         //const result = await this.model.updateOne({_id: new ObjectId(updateProduct.id)}, updateProduct)
         const result = await this.model.updateOne({_id: updateProduct.id}, updateProduct)
-        console.log(result)
         if (result.modifiedCount > 0) return ({ status: "sucess", message: "Product updated"})
         else return ({ status: "error", message: "Error. Cant update product."})
     }
 
     deleteProduct = async (id) => {
-        console.log(id)
         const deletedProduct = await this.model.deleteOne({_id: id})
         if(deletedProduct.deletedCount == 1) return ({ status: "success", message: "Product deleted."})
         return ({ status: "error", message: "Cannot delete product. ID not found"})

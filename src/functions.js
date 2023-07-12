@@ -24,7 +24,7 @@ export const sendMail = (user, textMessage) => {
             //return res.status(201).json({ msg: 'Recibiste un correo' })
             logger.log('info', message.text)
         })
-        .catch(error => {return res.status(500).json({ error })})
+        .catch(error => {logger.log('error', 'Error al enviar el mail de confirmación')})
 }
 
 export const sendSMS = (phoneNumber) => {

@@ -12,6 +12,7 @@ import cartsRouter from './router/carts.router.js';
 import chatRouter from './router/chat.router.js';
 import usersRouter from './router/users.router.js'
 import sessionRouter from './router/session.router.js';
+import paymentRouter from './router/payments.router.js'
 import productManager from'./dao/ProductManager.js';
 import MessageManager from './dao/MessagesManager.js'
 import initializePassport from './config/passport.config.js';
@@ -25,8 +26,10 @@ import logger from './logger.js'
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUiExpress from 'swagger-ui-express'
 
+const PORT = config.app.port
+const CHAT_PORT = config.app.chat_port
 const app = express();
-const httpServer = app.listen(3000, () => { console.log('Server connected!')})
+const httpServer = app.listen(CHAT_PORT, () => { console.log('Server connected!')})
 const serverSocket = new Server(httpServer);
 //const productManager = new ProductManager(__dirname + '/../products.json');
 
@@ -39,8 +42,6 @@ app.use(cookieParser(config.app.cookie_sign))
 app.use(express.json());
 app.use(express.urlencoded({extended: true}))
 //app.use(cors)
-
-const PORT = config.app.port
 
 //DB Connection
 const uri = config.app.uri
@@ -73,6 +74,7 @@ app.use('/api/carts', cartsRouter);
 app.use('/sessions', sessionRouter);
 app.use('/', chatRouter);
 app.use('/users', usersRouter)
+app.use('/payment', paymentRouter)
 
 //Swagger configuration
 const swaggerOptions = {
@@ -170,7 +172,6 @@ let messages = []
 serverSocket.on('connection', socket => {
     console.log('New client connected!')
     socket.on("newProduct", data =>{
-        console.log(data)
         //const productsList = productManager.getProducts();
         //io.emit('realTimeProducts', productsList)
     })

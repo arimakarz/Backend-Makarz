@@ -1,8 +1,7 @@
 export default class Repository {
-    constructor(dao, model, collectionName) {
+    constructor(dao, model) {
         this.dao = dao
         this.model = model
-        this.collectionName = collectionName
     }
 
     get = async(params) => {
@@ -10,6 +9,10 @@ export default class Repository {
     }
     
     getById = async(params) => {
-        return this.dao.getById(params, this.model, this.collectionName)
+        return this.dao.getById(params, this.model)
+    }
+
+    delete = async(params) => {
+        return this.dao.delete(params, this.model)
     }
 }

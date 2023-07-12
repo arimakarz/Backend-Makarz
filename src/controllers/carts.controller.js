@@ -33,10 +33,10 @@ export async function addToCart (req, res){
 }
 
 export async function deleteProductFromCart(req, res){
-    const { cid, pid } = req.body
+    const { cid, pid } = req.params
     const result = await cartsManager.deleteFromCart(cid, pid)
     if (result.status == "error") res.status(400).send('Product not removed from cart...')
-    else res.status(200).send("Cart updated. Item removed!")
+    else res.status(200).render(`/api/products`)
 }
 
 export async function updateQuantity(req, res){
@@ -47,7 +47,7 @@ export async function updateQuantity(req, res){
 }
 
 export async function deleteAllFromCart(req, res){
-    const {cid} = req.body
+    const cid = req.params.cid
     const result = await cartsManager.deleteAll(cid)
     if (result.status == "success") res.status(200).send(result.message)
     else res.status(400).send(result.message)

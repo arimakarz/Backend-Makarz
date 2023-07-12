@@ -18,7 +18,7 @@ export default (error, req, res, next) => {
             res.status(403).render('errors/base', { error })
             break;
         default:
-            res.send({ status: 'error', error: 'Unhandled error'})
+            res.send({ status: 'error', error: 'Oops. Unhandled error'})
             break;
     }
 }

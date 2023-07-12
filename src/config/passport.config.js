@@ -25,10 +25,11 @@ const initializePassport = () => {
     }, async (req, username, password, done) => {
         const { first_name, last_name, email, age } = req.body
         //try{
-            const user = await UserModel.findOne({ email: username })
+            //const user = await UserModel.findOne({ email: username })
+            const user = await usersManager.getByEmail(username)
             
             if (user){
-                console.log('User is already registered')
+                logger.error('User is already registered')
                 const error = CustomError.createError({
                     name: 'User creation error',
                     cause: generateErrorInfo(user),
@@ -62,7 +63,7 @@ const initializePassport = () => {
             }
 
             
-            const result = await UserModel.create(newUser)
+            const result = await usersManager.save(newUser)
             //Send confirmation email
             let textMessage = {
                 subject: `¡Bienvenido, ${newUser.first_name}`,
@@ -106,29 +107,31 @@ const initializePassport = () => {
         clientSecret: '974805ab461e2ff707514cc698e276cb0bc18707',
         callbackURL: 'http://localhost:8080/sessions/githubcallback'
     }, async(accessToken, refreshToken, profile, done) => {
-        try{
-            const user = await UserModel.findOne({ email: profile._json.email })
+        //try{
+            const email = profile._json.email
+            const user = await usersManager.getByEmail(email)
             if (user) {
                 return done(null, user)
             }else{
                 const resultCart = await cartsManager.createCart()
                 const newCart = await cartsManager.getNewCart()
-                const newUser = await UserModel.create({
+                const newUser = {
                     first_name: profile._json.name,
-                    last_name: '',
-                    //email: profile._json.email,
-                    email: "arimakarz@gmail.com",
+                    last_name: profile._json.last_name,
+                    email: profile._json.email,
+                    //email: "arimakarz@gmail.com",
                     role: 'user',
                     cartId: newCart._id
-                })
+                }
+                const result = await usersManager.save(newUser)
                 const token = generateToken(user, '24h')
                 newUser.token = token
 
                 return done(null, newUser)
             }
-        }catch(error){
-            return done(`Error to login with github. Error: ${error}`)
-        }
+        // }catch(error){
+        //     return done(`Error to login with github. Error: ${error}`)
+        // }
     }))
 
     passport.use('current', new JWTStrategy({

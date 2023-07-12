@@ -28,7 +28,6 @@ export const generateToken = (user, expiringTime) => {
 export const authToken = (req, res, next) => {
     let token = req.headers.auth
     if (!token) token = req.cookies[JWT_COOKIE_NAME]
-    //if (!token) res.status(401).send({ error: 'User not authenticated' })
     if (!token){
         const error = CustomError.createError({
             name: 'Unauthenticated',
@@ -52,6 +51,26 @@ export const authToken = (req, res, next) => {
             error.statusCode = 401
             res.render('errors/base', { error })
         } //res.status(403).send({ error: 'User not authorized' })
+        else req.user = credentials.user
+        next()
+    })
+}
+
+export const authTokenAdmin = (req, res, next) => {
+    let token = req.headers.auth
+    if (!token) token = req.cookies[JWT_COOKIE_NAME]
+    jwt.verify(token, JWT_PRIVATE_KEY, (error, credentials) => {
+        if ((error) || (credentials.user.role != 'admin')){
+            const error = CustomError.createError({
+                name: 'Unauthorized',
+                cause: "User premissions error",
+                message: 'User not authorizated.',
+                code: EError.UNAUTHORIZATION_ERROR,
+                backRoute: '/api/products'
+            })
+            error.statusCode = 401
+            res.render('errors/base', { error })
+        }
         else req.user = credentials.user
         next()
     })

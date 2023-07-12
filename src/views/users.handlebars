@@ -1,5 +1,6 @@
 <a href="/api/products/">Volver</a>
 <h2>Users list</h2>
+<button id="deleteInactiveUsers">Delete inactive users</button>
 <div>
     <table class="table table-striped">
         <tr>
@@ -7,6 +8,8 @@
             <th>Last name</th>
             <th>Email</th>
             <th>Role</th>
+            <th></th>
+            <th></th>
         </tr>
         {{#each users}}
             <tr>
@@ -14,8 +17,10 @@
                 <td>{{this.last_name}}</td>
                 <td>{{this.email}}</td>
                 <td>{{this.role}}</td> 
-                <td><a href="/premium/{{this._id}}">Change role</a></td>
+                <td><a href="users/premium/{{this._id}}">Change role</a></td>
+                <td><button id={{this._id}} name="deleteUserById" value={{this._id}}>Delete user</button></td>
             </tr>
         {{/each}}
     </table>
 </div>
+<script type="module" src="/js/admin.js"></script>

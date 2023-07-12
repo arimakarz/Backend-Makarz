@@ -31,8 +31,14 @@ class CartsManager{
 
     addToCart = async (cid, pid) => {
         const cart = await this.model.findOne({_id: cid})
+        let qty = 1
         if (cart){
-            cart.products.push( {product: pid, quantity: 1})
+            if (cart.products.some(item => item.product._id == pid)) {
+                const index = cart.products.findIndex(item => item.product._id == pid);
+                qty = cart.products[index].quantity + 1
+                cart.products.splice(index, 1)
+            }
+            cart.products.push( {product: pid, quantity: qty})
             const result = await this.model.updateOne({_id: cid}, cart)
             if (result.modifiedCount > 0) return ({ status: "success", message: "Cart updated"})
             else return ({ status: "error", message: "Error. Cant add product."})
@@ -68,7 +74,6 @@ class CartsManager{
         const listUpdated = await this.model.updateMany({_id: cid},
             {$pull: {products: {product: pid }}}
         )
-        console.log(listUpdated)
         if (listUpdated.modifiedCount >= 1) return ({ status: "success", message: "Product deleted from cart."})
         else return ({ status: "error", message: "Cannot delete product."})
     }

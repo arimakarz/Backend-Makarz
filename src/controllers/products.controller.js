@@ -6,6 +6,8 @@ import EError from '../services/errors/enums.js';
 import CustomError from "../services/errors/custom_error.js";
 import { generateErrorNewProduct } from "../services/errors/info.js";
 import logger from "../logger.js";
+import config from "../config/config.js";
+import { sendMail } from "../functions.js";
 
 export async function getProducts(req, res){
     let page = parseInt(req.query.page);
@@ -54,10 +56,7 @@ export async function getProducts(req, res){
         if (user.role == 'user') results.userRole = true
         else results.userRole = false
 
-        // if ((user.role == 'admin') || (user.role == 'premium')) results.admin = true
-        // else results.admin = false
 
-        console.log(results)
         res.render('realTimeProducts', {results, pagination})
     }else{
         const error = CustomError.createError({
@@ -76,12 +75,11 @@ export async function getProducts(req, res){
 export async function getProductById(req, res){
     const { pid } = req.params;
     try{
-        let product = await productManager.getProductById(pid);
+        let product = await productManager.getProductById(pid)
         if (!product.owner) product.isOwner = false
         else if (product.owner.toString() == req.user.user._id) product.isOwner = true
         else product.isOwner = false
-
-        res.render('product', product);
+        res.render('product', product)
     }catch{ 
         const error = CustomError.createError({
             name: 'Product not found',
@@ -126,9 +124,19 @@ export async function updateProduct(req, res){
 }
 
 export async function deleteProduct(req, res){
-    const { pid } = req.body;
+    const pid  = req.params.pid;
+    const product = await productManager.getProductById(pid)
+    const owner = await usersManager.getById(product.owner)
+    if (owner.role != 'admin'){
+        console.log('dueñi')
+        let textMessage = {
+            subject: `Producto eliminado`,
+            text: `Se ha eliminado el producto ${product.title} de la lista de productos.`
+        }
+        sendMail(owner, textMessage)
+    }
     const response = await productManager.deleteProduct(pid);
     const results = await productManager.getProducts(1,10,0,'')
-    if (response.status == "success") res.status(200).render("realTimeProducts", results)//res.status(200).json({response});
+    if (response.status == "success") res.status(200).render("realTimeProducts", results)
     else res.status(400).json({response})
 }

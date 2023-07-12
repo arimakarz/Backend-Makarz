@@ -8,7 +8,7 @@
             <button>Create new cart</button>
         </form>
         <a href="/api/carts/{{results.cartId}}">See my cart</a>
-        <a href="/chat">Chat</a>
+        <a href="http://localhost:3000/chat">Chat</a>
     {{/unless}}
     {{#if results.admin}}
         <a href="/users">Users</a>
@@ -47,13 +47,6 @@
         </form>
     </div>
     <br>
-    {{!-- <div class="deleteById">
-        <label style="font-size:20px;font-weight:bold;" for="">Delete product by Id</label>
-        <form action="/api/products" method="delete">
-            Id: <input type="text" id="idProduct">
-            <input type="submit" id="deleteProduct" value="Delete this product">
-        </form>
-    </div> --}}
 {{/unless}}
 <hr>
 <div class="showProducts">
@@ -66,15 +59,11 @@
             <p>Stock: {{ this.stock }}</p>
             {{#unless ../results.admin}}
                 <form action="/api/carts/{{../results.cartId}}/products/{{this._id}}" method="post">
-                    {{!-- <label for="qty">Quantity: </label>
-                    <input type="text" id="qty"> --}}
                     <button id="addToCart">Add to cart</button>
                 </form> 
             {{/unless}}
             {{#if ../results.admin}}
-                <form action="/api/products/{{this._id}}" method="delete">
-                    <input type="button" id="deleteById" value="Delete product"/>
-                </form> 
+                <input type="button" id={{this._id}} name="deleteById" value="Delete product"/>
             {{/if}}
         </div>
     {{/each}}
@@ -98,4 +87,4 @@
 </div>
 {{!-- <script src="/socket.io/socket.io.js"></script> --}}
 <script src="https://cdn.socket.io/socket.io-1.0.0.js"></script>
-{{!-- <script src="/js/client.js"></script> --}}
+<script type="module" src="/js/client.js"></script>

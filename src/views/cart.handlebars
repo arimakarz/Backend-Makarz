@@ -1,13 +1,15 @@
 <div>
     {{#if productsArray}}
         <h1>Your cart</h1>
-        <table class="cartInfo">
-        {{!-- <table class="table table-striped"> --}}
+        {{!-- <table class="cartInfo"> --}}
+        <p><button id="emptyCart" value={{cid}}>Delete all items</button></p>
+        <table class="table table-striped">
             <tr>
                 <th>Title</th>
                 <th>Description</th>
                 <th>Price</th>
                 <th>Quantity</th>
+                <th></th>
             </tr>
             {{#each productsArray}}
                 <tr>
@@ -15,7 +17,7 @@
                     <td class="description">{{this.product.description}}</td>
                     <td>{{this.product.price}}</td>
                     <td>{{quantity}}</td>
-                    <td><button>Remove</button></td>
+                    <td><button id={{this.product._id}} name="removeItem" value={{this.product._id}}>Remove item</button></td>
                 </tr>
             {{/each}}
         </table>
@@ -33,3 +35,4 @@
         </div>
     {{/if}}
 </div>
+<script type="module" src="/js/client.js"></script>
