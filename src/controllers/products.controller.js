@@ -96,7 +96,7 @@ export async function getProductById(req, res){
 
 export async function addProduct(req, res){
     const newProduct = req.body;
-    newProduct.owner = req.user.user._id
+    newProduct.owner = req.user._id
     const response = await productManager.addProducts(newProduct);
     if (response.status == "success"){
         const results = await productManager.getProducts();
@@ -128,7 +128,6 @@ export async function deleteProduct(req, res){
     const product = await productManager.getProductById(pid)
     const owner = await usersManager.getById(product.owner)
     if (owner.role != 'admin'){
-        console.log('dueñi')
         let textMessage = {
             subject: `Producto eliminado`,
             text: `Se ha eliminado el producto ${product.title} de la lista de productos.`

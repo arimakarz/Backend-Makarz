@@ -28,7 +28,6 @@ export const generateToken = (user, expiringTime) => {
 export const authToken = (req, res, next) => {
     let token = req.headers.auth
     if (!token) token = req.cookies[JWT_COOKIE_NAME]
-    console.log(token)
     if (!token){
         const error = CustomError.createError({
             name: 'Unauthenticated',

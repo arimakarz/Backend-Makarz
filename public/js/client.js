@@ -46,7 +46,6 @@ if (buttonsRemoveFromCart) {
                 method: 'DELETE'
             })
             .then(res => {
-                console.log(res)
                 res.json()
                 window.location.href = `http://localhost:8080/api/products`
             })

@@ -9,9 +9,9 @@ router.get('/', authToken, getProducts)
 
 router.get('/realtimeproducts', async (req, res) => {
     const { limit } = req.query;
-    const productsList = await productManager.getProducts();
-    (limit) ? productsList.splice(limit, (productsList.length - limit)) : productsList;
-    res.render('realTimeProducts', productsList)
+    const productsList = await getProducts();
+    // (limit) ? productsList.splice(limit, (productsList.length - limit)) : productsList;
+    // res.render('realTimeProducts', productsList)
 });
 
 router.get('/:pid', getProductById)
