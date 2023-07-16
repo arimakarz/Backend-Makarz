@@ -76,9 +76,12 @@ export async function getProductById(req, res){
     const { pid } = req.params;
     try{
         let product = await productManager.getProductById(pid)
-        if (!product.owner) product.isOwner = false
-        else if (product.owner.toString() == req.user.user._id) product.isOwner = true
+        if (product.owner == ""){
+            product.isOwner = false
+        } 
+        else if (product.owner.toString() == req.user._id) product.isOwner = true
         else product.isOwner = false
+
         res.render('product', product)
     }catch{ 
         const error = CustomError.createError({

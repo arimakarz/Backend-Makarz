@@ -80,7 +80,7 @@
                 </li>
             {{/each}}
             <li class="page-item {{#if results.hasNextPage}}{{else}}disabled{{/if}}">
-                <a class="page-link" href="products?page={{results.nextPage}}&limit={{results.limit}}">Siguiente</a>
+                <a class="page-link" href="/api/products?page={{results.nextPage}}&limit={{results.limit}}">Siguiente</a>
             </li>
         </ul>       
     </nav>

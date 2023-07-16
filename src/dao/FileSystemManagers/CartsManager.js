@@ -62,7 +62,6 @@ class CartsManager{
     }
 
     deleteFromCart = async (cid, pid) => {
-        console.log(id)
         const deletedProduct = await cartModel.deleteOne({_id: cid, product: pid})
         if(deletedProduct.deletedCount == 1){
             return ({ status: "success", message: "Product deleted from cart."})

@@ -30,7 +30,6 @@ router.get('/githubcallback', passport.authenticate('github', {failureRedirect: 
     req.user.token = token
     req.session.user = req.user
     res.cookie(JWT_COOKIE_NAME, token)
-    console.log('bein')
     res.redirect('/api/products')
 })
 

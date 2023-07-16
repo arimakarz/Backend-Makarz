@@ -34,9 +34,8 @@ import mongoosePaginate from 'mongoose-paginate-v2'
 // }
 //const productCollection = 'products';
 const collectionName = 'products'
-//const productSchema = new mongoose.Schema({
+
 const schema = new mongoose.Schema({
-    //id: String,
     title: String,
     description: String,
     price: Number,
@@ -58,7 +57,6 @@ const schema = new mongoose.Schema({
     }
 })
 
-//productSchema.plugin(mongoosePaginate)
 schema.plugin(mongoosePaginate)
 
 //const productModel = mongoose.model(productCollection, productSchema)

@@ -16,6 +16,10 @@ export default class Repository {
         return this.dao.save(params, this.model)
     }
 
+    update = async(params) => {
+        return this.dao.update(params, this.model)
+    }
+
     delete = async(params) => {
         return this.dao.delete(params, this.model)
     }

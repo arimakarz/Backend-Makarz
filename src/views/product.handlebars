@@ -5,6 +5,7 @@
     <p>Category: {{this.category}}</p>
     <p>Stock: {{this.stock}}</p>
     {{#if this.isOwner}}
+        <h5>You own this product</bold></h5>
         <button id="deleteProductById" name="Delete product" value={{this._id}}>Delete product</button><br><br>
     {{/if}}
     <a href="/api/products/">Volver</a>

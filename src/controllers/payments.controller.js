@@ -4,6 +4,7 @@ config()
 
 const stripe = new Stripe(process.env.PASS_STRIPE_SECRET)
 
+//Checkout and payment
 export const checkout = async (cart) => {
 
     let line_items = []

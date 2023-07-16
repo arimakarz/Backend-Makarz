@@ -8,6 +8,7 @@ const router = Router();
 //Creating a new cart
 router.post('/', createCart)
 
+//Getting a cart by its id
 router.get('/:cid', getCartById)
 
 //Adding a product to the cart
