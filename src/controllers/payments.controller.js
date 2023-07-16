@@ -27,8 +27,8 @@ export const checkout = async (cart) => {
     const session = await stripe.checkout.sessions.create({
         line_items,
         mode: 'payment',
-        success_url: 'http://localhost:8080/payment/success',
-        cancel_url: 'http://localhost:8080/payment/cancel'
+        success_url: '/payment/success',
+        cancel_url: '/payment/cancel'
     })
     return session
 }
