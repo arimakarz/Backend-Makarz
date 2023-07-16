@@ -73,7 +73,7 @@ app.use('/api/products', productsRouter);
 app.use('/sessions/current', passportCall('current'), sessionRouter);
 app.use('/api/carts', cartsRouter);
 app.use('/sessions', sessionRouter);
-app.use('/', chatRouter);
+app.use('/chat', chatRouter);
 app.use('/users', usersRouter)
 app.use('/payment', paymentRouter)
 
