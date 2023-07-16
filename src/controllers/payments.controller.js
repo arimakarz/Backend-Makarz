@@ -1,5 +1,6 @@
 import Stripe from 'stripe'
 import { config } from 'dotenv'
+import cartsManager from '../dao/CartsManager.js'
 config()
 
 const stripe = new Stripe(process.env.PASS_STRIPE_SECRET)
@@ -38,6 +39,7 @@ export const success = (req, res) => {
         status: "¡Gracias por su compra!",
         message: "Compra realizada con éxito. Verificá tu casilla de email para ver la información de entrega de su compra."
     }
+    cartsManager.createCart()
     res.render('payments', data)
 }
 
