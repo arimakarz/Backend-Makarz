@@ -3,7 +3,6 @@ import handlebars from 'express-handlebars';
 import { Server } from 'socket.io';
 import mongoose from 'mongoose';
 import session from 'express-session';
-import MongoStore from 'connect-mongo';
 import cors from 'cors'
 import passport from 'passport';
 import cookieParser from 'cookie-parser';
