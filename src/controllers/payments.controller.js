@@ -27,8 +27,8 @@ export const checkout = async (cart) => {
     const session = await stripe.checkout.sessions.create({
         line_items,
         mode: 'payment',
-        success_url: '/payment/success',
-        cancel_url: '/payment/cancel'
+        success_url: 'https://backend-makarz-production.up.railway.app/payment/success',
+        cancel_url: 'https://backend-makarz-production.up.railway.app/payment/cancel'
     })
     return session
 }
