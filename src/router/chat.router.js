@@ -6,7 +6,7 @@ import CustomError from '../services/errors/custom_error.js'
 
 const router = express.Router()
 
-router.get('/chat', passportCall('current'), (req, res) => {
+router.get('/', passportCall('current'), (req, res) => {
     if (req.user.user.role != 'admin') res.render('chat')
     else {
         const error = CustomError.createError({
